@@ -273,8 +273,16 @@ async function runGmailAudit(msgNode, badge) {
     attachmentList = [...new Set(attachmentList)];
     const attachment = attachmentList.length > 0 ? attachmentList[0] : "None";
     
+    // Check if Google/Gmail has already checked the attachment and flagged it safe
+    const hasGmailScan = msgNode.innerText.includes("Scanned by Gmail") || 
+                         msgNode.innerText.includes("Scanned by Google");
+
     // Assemble text payload
-    const textToAnalyze = `From: ${sender}\nSubject: ${subject}\nAttachment: ${attachment}\n\n${bodyText}`;
+    let textToAnalyze = `From: ${sender}\nSubject: ${subject}\nAttachment: ${attachment}\n`;
+    if (hasGmailScan) {
+      textToAnalyze += `Gmail-Scan: Scanned by Gmail\n`;
+    }
+    textToAnalyze += `\n${bodyText}`;
     
     const result = await processDomainChecks(senderDomain, textToAnalyze);
     renderAuditResult(bodyNode, msgNode, badge, result, senderDomain);
