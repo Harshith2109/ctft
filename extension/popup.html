@@ -26,33 +26,66 @@
       <span class="status-text">Checking local service connection...</span>
     </div>
 
-    <!-- Configuration card -->
-    <div class="card">
-      <label for="extModelSelect" class="section-label">Active ML Classifier</label>
-      <select id="extModelSelect" class="ext-select">
-        <option value="nb">Naive Bayes (Probabilistic)</option>
-        <option value="lr">Logistic Regression (Coefficients)</option>
-        <option value="rf">Random Forest (Ensemble Trees)</option>
-      </select>
+    <!-- Tabs Navigation -->
+    <div class="tab-nav" style="display: flex; gap: 4px; border-bottom: 1px solid var(--color-border); padding-bottom: 8px; margin-bottom: 4px;">
+      <button class="tab-btn active" data-tab="emailTab" style="flex: 1; background: transparent; border: none; color: var(--color-text-muted); font-size: 10px; font-weight: 600; text-transform: uppercase; cursor: pointer; padding: 6px 0; border-radius: 4px; transition: all 0.2s;">Emails</button>
+      <button class="tab-btn" data-tab="urlTab" style="flex: 1; background: transparent; border: none; color: var(--color-text-muted); font-size: 10px; font-weight: 600; text-transform: uppercase; cursor: pointer; padding: 6px 0; border-radius: 4px; transition: all 0.2s;">Links</button>
+      <button class="tab-btn" data-tab="fileTab" style="flex: 1; background: transparent; border: none; color: var(--color-text-muted); font-size: 10px; font-weight: 600; text-transform: uppercase; cursor: pointer; padding: 6px 0; border-radius: 4px; transition: all 0.2s;">Files</button>
     </div>
 
-    <!-- Manual input analyzer -->
-    <div class="card">
-      <label class="section-label">Manual Content Check</label>
-      <textarea id="manualText" class="ext-textarea" placeholder="Paste any suspicious text or email body here..."></textarea>
-      <button id="btnAnalyze" class="ext-btn">Analyze Text</button>
-    </div>
-
-    <!-- Local Whitelist Management -->
-    <div class="card">
-      <label class="section-label">Safe-Domain Whitelist</label>
-      <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-        <input type="text" id="whitelistInput" style="flex: 1; padding: 6px 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--color-border); border-radius: 6px; color: var(--color-text); font-size: 11px; outline: none; transition: border-color 0.2s;" placeholder="e.g. partnerdomain.com">
-        <button id="btnAddWhitelist" style="padding: 6px 12px; background: var(--color-primary); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; font-size: 11px; transition: background 0.2s;">+</button>
+    <!-- Tab 1: Email Scanner -->
+    <div id="emailTab" class="tab-pane active" style="display: flex; flex-direction: column; gap: 12px;">
+      <!-- Configuration card -->
+      <div class="card">
+        <label for="extModelSelect" class="section-label">Active ML Classifier</label>
+        <select id="extModelSelect" class="ext-select">
+          <option value="nb" selected>Naive Bayes (Probabilistic)</option>
+          <option value="lr">Logistic Regression (Coefficients)</option>
+          <option value="rf">Random Forest (Ensemble Trees)</option>
+        </select>
       </div>
-      <ul id="whitelistList" style="list-style: none; margin: 0; padding: 0; max-height: 80px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-        <!-- Whitelisted domains dynamically loaded here -->
-      </ul>
+
+      <!-- Manual input analyzer -->
+      <div class="card">
+        <label class="section-label">Manual Content Check</label>
+        <textarea id="manualText" class="ext-textarea" placeholder="Paste any suspicious text or email body here..."></textarea>
+        <button id="btnAnalyze" class="ext-btn">Analyze Text</button>
+      </div>
+
+      <!-- Local Whitelist Management -->
+      <div class="card">
+        <label class="section-label">Safe-Domain Whitelist</label>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+          <input type="text" id="whitelistInput" style="flex: 1; padding: 6px 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--color-border); border-radius: 6px; color: var(--color-text); font-size: 11px; outline: none; transition: border-color 0.2s;" placeholder="e.g. partnerdomain.com">
+          <button id="btnAddWhitelist" style="padding: 6px 12px; background: var(--color-primary); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; font-size: 11px; transition: background 0.2s;">+</button>
+        </div>
+        <ul id="whitelistList" style="list-style: none; margin: 0; padding: 0; max-height: 80px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+          <!-- Whitelisted domains dynamically loaded here -->
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tab 2: URL Scanner -->
+    <div id="urlTab" class="tab-pane" style="display: none; flex-direction: column; gap: 12px;">
+      <div class="card">
+        <label class="section-label">Manual URL Scanner</label>
+        <input type="text" id="manualUrlInput" style="width: 100%; padding: 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--color-border); border-radius: 8px; color: var(--color-text); font-size: 11px; outline: none; margin-bottom: 8px; transition: border-color 0.2s;" placeholder="Paste suspicious URL (e.g. http://...)">
+        <button id="btnScanUrl" class="ext-btn">Scan URL</button>
+      </div>
+    </div>
+
+    <!-- Tab 3: File Scanner -->
+    <div id="fileTab" class="tab-pane" style="display: none; flex-direction: column; gap: 12px;">
+      <div class="card">
+        <label class="section-label">File & ZIP Antivirus Scanner</label>
+        <div id="fileDropzone" style="border: 2px dashed rgba(148, 163, 184, 0.3); border-radius: 12px; padding: 18px 12px; text-align: center; cursor: pointer; background: rgba(15, 23, 42, 0.3); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
+          <span style="font-size: 20px;">📂</span>
+          <span style="font-size: 11px; font-weight: 600; color: var(--color-text-muted);" id="dropzoneText">Click or Drag & Drop File</span>
+          <span style="font-size: 9px; color: #64748b;" id="selectedFileName">Supports .zip, .exe, .pdf, .docx, etc.</span>
+          <input type="file" id="fileInput" style="display: none;">
+        </div>
+        <button id="btnScanFile" class="ext-btn" style="margin-top: 10px;">Scan File</button>
+      </div>
     </div>
 
     <!-- Dynamic results block -->
@@ -74,6 +107,22 @@
           <span class="stat-lbl">Action:</span>
           <span id="resAction" class="stat-val">None</span>
         </div>
+      </div>
+
+      <!-- File details output (visible for zip content scan) -->
+      <div id="resFileDetails" class="hidden" style="margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+        <strong style="color: var(--color-primary-light); font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">ZIP Archive Contents:</strong>
+        <ul id="innerFilesList" style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; max-height: 80px; overflow-y: auto; font-size: 10px;">
+          <!-- Inner files listed here -->
+        </ul>
+      </div>
+
+      <!-- Reasons list block -->
+      <div id="resReasonsBlock" class="hidden" style="margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+        <strong style="color: var(--color-primary-light); font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Heuristics Log:</strong>
+        <ul id="resReasonsList" style="list-style: disc; margin: 0 0 0 14px; padding: 0; color: #94a3b8; font-size: 10px; display: flex; flex-direction: column; gap: 2px;">
+          <!-- Reasons listed here -->
+        </ul>
       </div>
     </div>
   </main>

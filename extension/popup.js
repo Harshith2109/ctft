@@ -1,5 +1,5 @@
 // PhishGuard Extension Popup Controller
-// Binds UI controls, pings the backend, handles manual text checks, and manages whitelisted domains.
+// Binds UI controls, pings the backend, handles manual text, URL, and file/zip checks.
 
 const FLASK_SERVER = "https://phishguard-api-fzds.onrender.com";
 
@@ -14,13 +14,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnAddWhitelist = document.getElementById("btnAddWhitelist");
   const whitelistList = document.getElementById("whitelistList");
 
+  // URL Tab Controls
+  const manualUrlInput = document.getElementById("manualUrlInput");
+  const btnScanUrl = document.getElementById("btnScanUrl");
+
+  // File Tab Controls
+  const fileDropzone = document.getElementById("fileDropzone");
+  const fileInput = document.getElementById("fileInput");
+  const dropzoneText = document.getElementById("dropzoneText");
+  const selectedFileName = document.getElementById("selectedFileName");
+  const btnScanFile = document.getElementById("btnScanFile");
+
   const resIcon = document.getElementById("resIcon");
   const resTitle = document.getElementById("resTitle");
   const resSub = document.getElementById("resSub");
   const resScore = document.getElementById("resScore");
   const resAction = document.getElementById("resAction");
 
-  // 1. Check local server connection status
+  // ZIP contents and reasons output containers
+  const resFileDetails = document.getElementById("resFileDetails");
+  const innerFilesList = document.getElementById("innerFilesList");
+  const resReasonsBlock = document.getElementById("resReasonsBlock");
+  const resReasonsList = document.getElementById("resReasonsList");
+
+  let selectedFileObj = null;
+
+  // 1. Check server connection status
   pingBackend();
 
   // 2. Load saved classifier configuration
@@ -59,7 +78,132 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 6. Handle manual text check
+  // 6. Tab Navigation Logic
+  const tabBtns = document.querySelectorAll(".tab-btn");
+  const tabPanes = document.querySelectorAll(".tab-pane");
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      // Deactivate all
+      tabBtns.forEach(b => b.classList.remove("active"));
+      tabPanes.forEach(p => p.style.display = "none");
+      
+      // Activate clicked
+      btn.classList.add("active");
+      const targetId = btn.getAttribute("data-tab");
+      document.getElementById(targetId).style.display = "flex";
+      
+      // Hide results block on tab switch to keep UI clean
+      resultsBlock.classList.add("hidden");
+    });
+  });
+
+  // 7. Manual URL check
+  btnScanUrl.addEventListener("click", async () => {
+    const url = manualUrlInput.value.trim();
+    if (!url) {
+      alert("Please enter a URL first.");
+      return;
+    }
+
+    btnScanUrl.disabled = true;
+    btnScanUrl.textContent = "Scanning URL...";
+    resultsBlock.classList.add("hidden");
+
+    try {
+      const response = await fetch(`${FLASK_SERVER}/scan/link`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: url })
+      });
+      const data = await response.json();
+      btnScanUrl.disabled = false;
+      btnScanUrl.textContent = "Scan URL";
+
+      if (response.ok) {
+        displayScanResult(data);
+      } else {
+        alert("Scan Error: " + (data.error || "Unknown server error"));
+      }
+    } catch (err) {
+      btnScanUrl.disabled = false;
+      btnScanUrl.textContent = "Scan URL";
+      alert("Failed to connect to backend server: " + err.message);
+    }
+  });
+
+  // 8. File Picker and Dropzone events
+  fileDropzone.addEventListener("click", () => {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files.length > 0) {
+      handleFileSelected(fileInput.files[0]);
+    }
+  });
+
+  // Drag over effects
+  fileDropzone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    fileDropzone.classList.add("dragover");
+  });
+
+  fileDropzone.addEventListener("dragleave", () => {
+    fileDropzone.classList.remove("dragover");
+  });
+
+  fileDropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    fileDropzone.classList.remove("dragover");
+    if (e.dataTransfer.files.length > 0) {
+      handleFileSelected(e.dataTransfer.files[0]);
+    }
+  });
+
+  function handleFileSelected(file) {
+    selectedFileObj = file;
+    dropzoneText.textContent = "File Selected";
+    selectedFileName.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+    selectedFileName.style.color = "var(--color-primary-light)";
+  }
+
+  // 9. Manual File Check
+  btnScanFile.addEventListener("click", async () => {
+    if (!selectedFileObj) {
+      alert("Please select or drop a file first.");
+      return;
+    }
+
+    btnScanFile.disabled = true;
+    btnScanFile.textContent = "Uploading & Scanning...";
+    resultsBlock.classList.add("hidden");
+
+    const formData = new FormData();
+    formData.append("file", selectedFileObj);
+
+    try {
+      const response = await fetch(`${FLASK_SERVER}/scan/file`, {
+        method: "POST",
+        body: formData
+      });
+      const data = await response.json();
+      btnScanFile.disabled = false;
+      btnScanFile.textContent = "Scan File";
+
+      if (response.ok) {
+        displayScanResult(data);
+      } else {
+        alert("Scan Error: " + (data.error || "Unknown server error"));
+      }
+    } catch (err) {
+      btnScanFile.disabled = false;
+      btnScanFile.textContent = "Scan File";
+      alert("Failed to connect to backend server: " + err.message);
+    }
+  });
+
+  // 10. Handle manual text check (Emails tab)
   btnAnalyze.addEventListener("click", async () => {
     const text = manualText.value.trim();
     if (!text) {
@@ -89,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (response.success) {
-          displayResult(response.data);
+          displayEmailResult(response.data);
         } else {
           alert("Scan Error: " + response.error);
         }
@@ -106,13 +250,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch(`${FLASK_SERVER}/metrics`);
       if (response.ok) {
         dot.className = "status-dot connected";
-        label.textContent = "Connected to local server";
+        label.textContent = "Connected to Render server";
       } else {
         throw new Error("HTTP connection check failed.");
       }
     } catch (err) {
       dot.className = "status-dot disconnected";
-      label.textContent = "Disconnected (Start app.py)";
+      label.textContent = "Disconnected (Backend server offline)";
     }
   }
 
@@ -149,8 +293,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Renders the prediction payload onto the results UI card
-  function displayResult(data) {
+  // Renders manual Email prediction payloads onto results card
+  function displayEmailResult(data) {
+    resFileDetails.classList.add("hidden");
+    resReasonsBlock.classList.add("hidden");
+    
     resultsBlock.classList.remove("hidden");
     resultsBlock.className = "card result-card"; // Reset styling
 
@@ -172,5 +319,54 @@ document.addEventListener("DOMContentLoaded", () => {
     resSub.textContent = `Model: ${data.model_used.toUpperCase()} | Confidence: ${confidenceVal}`;
     resScore.textContent = `${data.risk_score}%`;
     resAction.textContent = data.recommended_action;
+  }
+
+  // Renders URL and File Scan payloads onto results card
+  function displayScanResult(data) {
+    resultsBlock.classList.remove("hidden");
+    resultsBlock.className = "card result-card"; // Reset styling
+
+    const isDanger = data.prediction === "Phishing" || data.prediction === "Suspicious" || data.risk_score >= 50;
+
+    if (isDanger) {
+      resultsBlock.classList.add("phish");
+      resIcon.textContent = "🚨";
+      resTitle.textContent = data.is_zip ? "Threat Alert: Zipped Malware" : `Threat Alert: ${data.prediction}`;
+      resTitle.style.color = "#ef4444";
+    } else {
+      resultsBlock.classList.add("safe");
+      resIcon.textContent = "🛡️";
+      resTitle.textContent = "Audit Clear: Safe";
+      resTitle.style.color = "#10b981";
+    }
+
+    resSub.textContent = data.filename ? `File: ${data.filename}` : `Link Reputation Checked`;
+    resScore.textContent = `${data.risk_score}%`;
+    resAction.textContent = data.risk_level;
+
+    // Show reasons/heuristics
+    resReasonsBlock.classList.remove("hidden");
+    resReasonsList.innerHTML = "";
+    if (data.reasons && data.reasons.length > 0) {
+      data.reasons.forEach(r => {
+        const li = document.createElement("li");
+        li.textContent = r;
+        resReasonsList.appendChild(li);
+      });
+    }
+
+    // ZIP Inner Files details logic
+    if (data.is_zip && data.inner_files && data.inner_files.length > 0) {
+      resFileDetails.classList.remove("hidden");
+      innerFilesList.innerHTML = "";
+      data.inner_files.forEach(f => {
+        const li = document.createElement("li");
+        const color = f.risk_level === "High Risk" ? "#fca5a5" : "#a7f3d0";
+        li.innerHTML = `<span style="color:#cbd5e1;">${f.filename}</span> &mdash; <strong style="color:${color};">${f.risk_level}</strong>`;
+        innerFilesList.appendChild(li);
+      });
+    } else {
+      resFileDetails.classList.add("hidden");
+    }
   }
 });

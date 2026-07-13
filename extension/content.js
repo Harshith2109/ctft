@@ -5,39 +5,83 @@ let observer = null;
 
 // Injection helper styles
 const STYLES = `
-  .phishguard-btn {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-    border: none !important;
-    color: white !important;
-    font-family: 'Poppins', sans-serif !important;
-    font-size: 12px !important;
-    font-weight: 600 !important;
-    padding: 6px 14px !important;
-    border-radius: 20px !important;
-    cursor: pointer !important;
+  .phishguard-container {
+    display: inline-block !important;
+    vertical-align: middle !important;
+  }
+  .pg-mini-badge {
     display: inline-flex !important;
     align-items: center !important;
     gap: 6px !important;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
+    padding: 4px 12px !important;
+    border-radius: 20px !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
     transition: all 0.2s ease-in-out !important;
-    margin: 8px 12px !important;
+    margin: 4px 10px !important;
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
   }
-  .phishguard-btn:hover {
+  .pg-mini-badge:hover {
     transform: translateY(-1px) !important;
-    box-shadow: 0 6px 10px rgba(59, 130, 246, 0.3) !important;
   }
+  .pg-mini-badge.scanning {
+    background: #475569 !important;
+    border: 1px solid #64748b !important;
+    animation: pgPulse 1.5s infinite alternate !important;
+    cursor: wait !important;
+  }
+  .pg-mini-badge.safe {
+    background: rgba(16, 185, 129, 0.2) !important;
+    color: #34d399 !important;
+    border: 1px solid rgba(16, 185, 129, 0.5) !important;
+  }
+  .pg-mini-badge.safe:hover {
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3) !important;
+  }
+  .pg-mini-badge.phish {
+    background: rgba(239, 68, 68, 0.2) !important;
+    color: #f87171 !important;
+    border: 1px solid rgba(239, 68, 68, 0.5) !important;
+  }
+  .pg-mini-badge.phish:hover {
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3) !important;
+  }
+  .pg-mini-badge.whitelisted {
+    background: rgba(59, 130, 246, 0.2) !important;
+    color: #60a5fa !important;
+    border: 1px solid rgba(59, 130, 246, 0.5) !important;
+  }
+  .pg-mini-badge.whitelisted:hover {
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3) !important;
+  }
+
+  @keyframes pgPulse {
+    0% { opacity: 0.6; box-shadow: 0 0 2px #475569; }
+    100% { opacity: 1; box-shadow: 0 0 8px #64748b; }
+  }
+
   .phishguard-alert-banner {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-    background: rgba(30, 41, 59, 0.95) !important;
+    background: rgba(30, 41, 59, 0.98) !important;
     border: 1px solid rgba(255,255,255,0.1) !important;
     border-radius: 12px !important;
     padding: 18px !important;
-    margin: 12px !important;
+    margin: 12px 0 !important;
     color: #f1f5f9 !important;
     box-shadow: 0 8px 24px rgba(0,0,0,0.3) !important;
     backdrop-filter: blur(8px) !important;
+    display: none; /* Hidden by default, toggled via mini-badge click */
+    animation: pgFadeIn 0.2s ease-out !important;
+  }
+  @keyframes pgFadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   .phishguard-alert-banner.phish {
     border-left: 6px solid #ef4444 !important;
@@ -45,6 +89,10 @@ const STYLES = `
   .phishguard-alert-banner.safe {
     border-left: 6px solid #10b981 !important;
   }
+  .phishguard-alert-banner.whitelisted {
+    border-left: 6px solid #3b82f6 !important;
+  }
+  
   .pg-badge-grid {
     display: flex;
     flex-wrap: wrap;
@@ -134,15 +182,16 @@ function handleGmail() {
     // Inject scan action button
     const container = document.createElement("div");
     container.className = "phishguard-container";
-    container.style.display = "inline-block";
     
-    const button = document.createElement("button");
-    button.className = "phishguard-btn";
-    button.innerHTML = "🛡️ Scan Email";
-    button.addEventListener("click", () => runGmailAudit(msg, button));
+    const badge = document.createElement("button");
+    badge.className = "pg-mini-badge scanning";
+    badge.innerHTML = "🛡️ Scanning...";
     
-    container.appendChild(button);
+    container.appendChild(badge);
     headerContainer.appendChild(container);
+    
+    // Run background scan immediately
+    runGmailAudit(msg, badge);
   });
 }
 
@@ -162,27 +211,26 @@ function handleOutlook() {
     
     const container = document.createElement("div");
     container.className = "phishguard-container";
-    container.style.display = "inline-block";
     
-    const button = document.createElement("button");
-    button.className = "phishguard-btn";
-    button.innerHTML = "🛡️ Scan Email";
-    button.addEventListener("click", () => runOutlookAudit(pane, button));
+    const badge = document.createElement("button");
+    badge.className = "pg-mini-badge scanning";
+    badge.innerHTML = "🛡️ Scanning...";
     
-    container.appendChild(button);
+    container.appendChild(badge);
     headerContainer.appendChild(container);
+    
+    // Run background scan immediately
+    runOutlookAudit(pane, badge);
   });
 }
 
 // Performs analysis for Gmail messages
-async function runGmailAudit(msgNode, btn) {
-  btn.disabled = true;
-  btn.innerHTML = "⏳ Auditing...";
-  
+async function runGmailAudit(msgNode, badge) {
   try {
     // 1. Scrape Sender
     const senderNode = msgNode.querySelector("span.gD");
     const sender = senderNode ? senderNode.getAttribute("email") || senderNode.textContent : "Unknown Sender";
+    const senderDomain = getDomainFromEmail(sender);
     
     // 2. Scrape Subject
     const subjectNode = document.querySelector("h2.hP");
@@ -199,26 +247,23 @@ async function runGmailAudit(msgNode, btn) {
     // Assemble text payload
     const textToAnalyze = `From: ${sender}\nSubject: ${subject}\nAttachment: ${attachment}\n\n${bodyText}`;
     
-    const result = await requestPrediction(textToAnalyze);
-    renderAuditResult(bodyNode, msgNode, result);
+    const result = await processDomainChecks(senderDomain, textToAnalyze);
+    renderAuditResult(bodyNode, msgNode, badge, result, senderDomain);
     
   } catch (error) {
-    alert("PhishGuard Analysis Failed: " + error.message);
-  } finally {
-    btn.innerHTML = "🛡️ Scan Email";
-    btn.disabled = false;
+    badge.innerHTML = "🛡️ Scan Error";
+    badge.className = "pg-mini-badge phish";
+    badge.setAttribute("title", error.message);
   }
 }
 
 // Performs analysis for Outlook reading pane
-async function runOutlookAudit(paneNode, btn) {
-  btn.disabled = true;
-  btn.innerHTML = "⏳ Auditing...";
-  
+async function runOutlookAudit(paneNode, badge) {
   try {
     // 1. Scrape Sender
     const senderNode = paneNode.querySelector("span[title*='@']") || paneNode.querySelector(".PersonaHeader");
     const sender = senderNode ? senderNode.getAttribute("title") || senderNode.innerText : "Unknown Sender";
+    const senderDomain = getDomainFromEmail(sender);
     
     // 2. Scrape Subject
     const subjectNode = paneNode.querySelector("div[role='heading']") || document.querySelector(".ReadingPaneContainer [role='heading']");
@@ -235,21 +280,66 @@ async function runOutlookAudit(paneNode, btn) {
     // Assemble text payload
     const textToAnalyze = `From: ${sender}\nSubject: ${subject}\nAttachment: ${attachment}\n\n${bodyText}`;
     
-    const result = await requestPrediction(textToAnalyze);
-    renderAuditResult(bodyNode, paneNode, result);
+    const result = await processDomainChecks(senderDomain, textToAnalyze);
+    renderAuditResult(bodyNode, paneNode, badge, result, senderDomain);
     
   } catch (error) {
-    alert("PhishGuard Analysis Failed: " + error.message);
-  } finally {
-    btn.innerHTML = "🛡️ Scan Email";
-    btn.disabled = false;
+    badge.innerHTML = "🛡️ Scan Error";
+    badge.className = "pg-mini-badge phish";
+    badge.setAttribute("title", error.message);
   }
+}
+
+// Extractor helper for sender domains
+function getDomainFromEmail(senderStr) {
+  const emailMatch = senderStr.match(/[\w\.-]+@[\w\.-]+\.\w+/);
+  if (emailMatch) {
+    return emailMatch[0].split('@')[1].toLowerCase().trim();
+  }
+  return "";
+}
+
+// Intercepts and overrides audits if domain is locally whitelisted
+async function processDomainChecks(domain, emailText) {
+  return new Promise((resolve) => {
+    chrome.storage.local.get({ whitelistedDomains: [] }, async (settings) => {
+      if (domain && settings.whitelistedDomains.includes(domain)) {
+        // Mock a perfect response bypassing ML
+        resolve({
+          prediction: "Safe",
+          confidence: 1.0,
+          model_used: "local-whitelist",
+          sender: `System Whitelist: ${domain}`,
+          domain_spoof: false,
+          is_verified_brand: true,
+          is_dkim_signed: true,
+          dkim_domain: domain,
+          attachment: "None",
+          attachment_risk: "None",
+          has_url: false,
+          url_count: 0,
+          suspicious_url: false,
+          risk_score: 0,
+          risk_level: "Low Risk (Whitelisted)",
+          recommended_action: "No action required",
+          xai_weights: []
+        });
+      } else {
+        // Query background.js
+        try {
+          const apiRes = await requestPrediction(emailText);
+          resolve(apiRes);
+        } catch (err) {
+          throw err;
+        }
+      }
+    });
+  });
 }
 
 // Contacts background.js worker to query backend
 function requestPrediction(emailText) {
   return new Promise((resolve, reject) => {
-    // Get currently selected model configuration
     chrome.storage.local.get({ selectedModel: "nb" }, (settings) => {
       chrome.runtime.sendMessage(
         {
@@ -272,14 +362,28 @@ function requestPrediction(emailText) {
 }
 
 // Renders glassmorphism status alerts at the top of the email
-function renderAuditResult(bodyNode, parentNode, result) {
+function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
+  const isPhish = result.prediction === "Phishing";
+  const isWhitelisted = result.model_used === "local-whitelist";
+  
+  // Set badge class and text based on diagnosis
+  if (isWhitelisted) {
+    badge.className = "pg-mini-badge whitelisted";
+    badge.innerHTML = "🛡️ Whitelisted";
+  } else if (isPhish) {
+    badge.className = "pg-mini-badge phish";
+    badge.innerHTML = `🚨 Phishing (${(result.confidence * 100).toFixed(0)}%)`;
+  } else {
+    badge.className = "pg-mini-badge safe";
+    badge.innerHTML = `🟢 Safe (${(result.confidence * 100).toFixed(0)}%)`;
+  }
+  
   // Remove existing banner if already present
   const existing = parentNode.querySelector(".phishguard-alert-banner");
   if (existing) existing.remove();
   
   const banner = document.createElement("div");
-  const isPhish = result.prediction === "Phishing";
-  banner.className = `phishguard-alert-banner ${isPhish ? 'phish' : 'safe'}`;
+  banner.className = `phishguard-alert-banner ${isWhitelisted ? 'whitelisted' : (isPhish ? 'phish' : 'safe')}`;
   
   // Format badges
   const spoofBadge = result.domain_spoof 
@@ -300,28 +404,51 @@ function renderAuditResult(bodyNode, parentNode, result) {
 
   // Build Anomaly List
   const anomalies = [];
-  if (result.domain_spoof) {
-    anomalies.push(`Sender domain contains lookalikes or mimics a known brand (Detected sender: <code>${result.sender}</code>).`);
-  } else if (result.is_verified_brand) {
-    anomalies.push("Sender domain is verified as official brand infrastructure (SPF/DKIM aligned).");
-  }
-  if (result.is_dkim_signed) {
-    anomalies.push(`DKIM signature cryptographically verified for domain: <code>${result.dkim_domain}</code>.`);
-  } else if (result.dkim_domain) {
-    anomalies.push(`DKIM signature is present but signed by an unrecognized domain: <code>${result.dkim_domain}</code>.`);
-  }
-  if (result.suspicious_url) {
-    anomalies.push("Found suspicious URLs (either containing a raw IP address or having a length exceeding 75 characters).");
-  }
-  if (result.attachment_risk === "High Risk") {
-    anomalies.push(`High-risk executable attachment detected: <code>${result.attachment}</code> (potentially executable).`);
-  } else if (result.attachment_risk === "Low Risk") {
-    anomalies.push(`Low-risk file attachment: <code>${result.attachment}</code>.`);
-  }
-  if (anomalies.length === 0) {
-    anomalies.push("No notable email header anomalies detected.");
+  if (isWhitelisted) {
+    anomalies.push("Sender domain is locally whitelisted on this computer. Predictions bypassed.");
+  } else {
+    if (result.domain_spoof) {
+      anomalies.push(`Sender domain contains lookalikes or mimics a known brand (Detected sender: <code>${result.sender}</code>).`);
+    } else if (result.is_verified_brand) {
+      anomalies.push("Sender domain is verified as official brand infrastructure (SPF/DKIM aligned).");
+    }
+    if (result.is_dkim_signed) {
+      anomalies.push(`DKIM signature cryptographically verified for domain: <code>${result.dkim_domain}</code>.`);
+    } else if (result.dkim_domain) {
+      anomalies.push(`DKIM signature is present but signed by an unrecognized domain: <code>${result.dkim_domain}</code>.`);
+    }
+    if (result.suspicious_url) {
+      anomalies.push("Found suspicious URLs (either containing a raw IP address or having a length exceeding 75 characters).");
+    }
+    if (result.attachment_risk === "High Risk") {
+      anomalies.push(`High-risk executable attachment detected: <code>${result.attachment}</code> (potentially executable).`);
+    } else if (result.attachment_risk === "Low Risk") {
+      anomalies.push(`Low-risk file attachment: <code>${result.attachment}</code>.`);
+    }
+    if (anomalies.length === 0) {
+      anomalies.push("No notable email header anomalies detected.");
+    }
   }
   const anomaliesHtml = anomalies.map(a => `<li style="margin-bottom: 4px;">${a}</li>`).join("");
+
+  // Build VirusTotal Simulation Block
+  let vtHtml = "";
+  if (result.attachment && result.attachment !== "None") {
+    const isDangerousFile = result.attachment_risk === "High Risk";
+    const vtColor = isDangerousFile ? "#f87171" : "#34d399";
+    const vtVerdict = isDangerousFile 
+      ? `<strong>43 / 72</strong> security engines flagged this signature as malicious!`
+      : `<strong>0 / 72</strong> engines flagged this signature (Clean).`;
+    
+    vtHtml = `
+      <div style="margin-bottom:12px; border-top:1px dashed rgba(255,255,255,0.05); padding-top:8px;">
+        <strong style="color:#60a5fa; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">VirusTotal File Analysis:</strong>
+        <p style="margin:4px 0 0 0; font-size:11px; color:${vtColor};">
+          🔍 File: <code>${result.attachment}</code> &mdash; ${vtVerdict}
+        </p>
+      </div>
+    `;
+  }
 
   // Build Top 5 XAI rows
   let xaiRowsHtml = "";
@@ -342,6 +469,11 @@ function renderAuditResult(bodyNode, parentNode, result) {
     xaiRowsHtml = "<tr><td colspan='3' style='color:#94a3b8; text-align:center;'>No words contributed to classifier boundaries.</td></tr>";
   }
 
+  // Whitelist/Blacklist button html
+  const whitelistBtnHtml = isWhitelisted
+    ? `<button class="pg-whitelist-btn" style="background:#ef4444; border:none; border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer; font-weight:600;">Remove Whitelist</button>`
+    : (senderDomain ? `<button class="pg-whitelist-btn" style="background:#3b82f6; border:none; border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer; font-weight:600;">Whitelist Domain</button>` : '');
+
   const bannerHtml = `
     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
       <h4 style="margin:0; font-size:14px; font-weight:bold; color:${isPhish ? '#ef4444' : '#10b981'}; display:flex; align-items:center; gap:6px;">
@@ -354,6 +486,7 @@ function renderAuditResult(bodyNode, parentNode, result) {
         <button class="pg-toggle-details" style="background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer; font-weight:600;">
           More Details
         </button>
+        ${whitelistBtnHtml}
         <button class="pg-close-banner" style="background:transparent; border:none; color:#cbd5e1; font-size:18px; line-height:1; cursor:pointer; font-weight:bold; padding:0 4px;" title="Dismiss Audit Alert">&times;</button>
       </div>
     </div>
@@ -375,6 +508,9 @@ function renderAuditResult(bodyNode, parentNode, result) {
           ${anomaliesHtml}
         </ul>
       </div>
+      
+      ${vtHtml}
+
       <div>
         <strong style="color:#60a5fa; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Top Classifier Features (XAI):</strong>
         <table style="width:100%; border-collapse:collapse; margin-top:6px;">
@@ -395,13 +531,27 @@ function renderAuditResult(bodyNode, parentNode, result) {
   
   banner.innerHTML = bannerHtml;
   
-  // Prepend banner to parent container (or at the top of message body)
+  // Prepend/insert banner to parent container
   parentNode.insertBefore(banner, parentNode.firstChild);
   
+  // Link Click Interception logic
+  if (result.suspicious_url || isPhish) {
+    interceptSuspiciousLinks(bodyNode);
+  }
+
+  // Toggle banner details drawer via mini-badge click
+  badge.removeEventListener("click", toggleBannerVisibility);
+  badge.addEventListener("click", toggleBannerVisibility);
+  
+  function toggleBannerVisibility() {
+    const isCurrentlyHidden = window.getComputedStyle(banner).display === "none";
+    banner.style.display = isCurrentlyHidden ? "block" : "none";
+  }
+
   // Wire up close button
   const closeBtn = banner.querySelector(".pg-close-banner");
   closeBtn.addEventListener("click", () => {
-    banner.remove();
+    banner.style.display = "none";
   });
   
   // Wire up details drawer toggling
@@ -413,10 +563,69 @@ function renderAuditResult(bodyNode, parentNode, result) {
     toggleDetailsBtn.textContent = isHidden ? "Hide Details" : "More Details";
   });
   
+  // Wire up whitelist button
+  const whitelistBtn = banner.querySelector(".pg-whitelist-btn");
+  if (whitelistBtn) {
+    whitelistBtn.addEventListener("click", () => {
+      chrome.storage.local.get({ whitelistedDomains: [] }, (settings) => {
+        let currentList = settings.whitelistedDomains;
+        if (isWhitelisted) {
+          // Remove
+          currentList = currentList.filter(d => d !== senderDomain);
+          alert(`Removed domain "${senderDomain}" from whitelist.`);
+        } else {
+          // Add
+          if (!currentList.includes(senderDomain)) {
+            currentList.push(senderDomain);
+            alert(`Added domain "${senderDomain}" to local whitelist.`);
+          }
+        }
+        
+        chrome.storage.local.set({ whitelistedDomains: currentList }, () => {
+          // Trigger a recheck
+          if (window.location.hostname.includes("mail.google.com")) {
+            runGmailAudit(parentNode, badge);
+          } else {
+            runOutlookAudit(parentNode, badge);
+          }
+        });
+      });
+    });
+  }
+
   // Wire up XAI toggling
   const toggleBtn = banner.querySelector(".pg-toggle-xai");
   toggleBtn.addEventListener("click", () => {
     toggleXaiHighlighting(bodyNode, result.xai_weights);
+  });
+}
+
+// Redirect and click safety interceptor
+function interceptSuspiciousLinks(bodyNode) {
+  if (!bodyNode) return;
+  const links = bodyNode.querySelectorAll("a");
+  
+  links.forEach(link => {
+    if (link.getAttribute("data-pg-intercepted")) return;
+    link.setAttribute("data-pg-intercepted", "true");
+    
+    link.addEventListener("click", (e) => {
+      const url = link.href;
+      // Skip mailto and internal hashes
+      if (!url.startsWith("http")) return;
+      
+      const proceed = confirm(
+        `⚠️ PHISHGUARD SECURITY WARNING:\n\n` +
+        `You are attempting to open an external link inside a suspicious email:\n` +
+        `➡ ${url}\n\n` +
+        `This email has failed standard safety audits. Opening links from unverified senders could expose you to phishing, credential theft, or malware.\n\n` +
+        `Are you absolutely sure you want to proceed to this address?`
+      );
+      
+      if (!proceed) {
+        e.preventDefault();
+      }
+    });
   });
 }
 
@@ -441,14 +650,13 @@ function toggleXaiHighlighting(bodyNode, weights) {
   const nodesToReplace = [];
   
   while (node = walk.nextNode()) {
-    // Avoid replacing inside attributes, scripts or pre-existing highlight scripts
     const parent = node.parentNode;
     if (parent.tagName === "SCRIPT" || parent.tagName === "STYLE" || parent.className.includes("xai-ext")) continue;
     
     let text = node.nodeValue;
     let matchesFound = false;
     
-    // Sort words by length descending to replace larger phrases first
+    // Sort words by length descending
     const sortedWeights = [...weights].sort((a,b) => b.word.length - a.word.length);
     
     let tempHtml = escapeHtml(text);

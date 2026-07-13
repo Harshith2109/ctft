@@ -277,3 +277,24 @@ h1 {
 .whitelist-del-btn:hover {
   color: #ff6b6b;
 }
+
+.tab-btn {
+  opacity: 0.6;
+  border-bottom: 2px solid transparent !important;
+}
+
+.tab-btn.active {
+  opacity: 1 !important;
+  color: var(--color-primary-light) !important;
+  border-bottom: 2px solid var(--color-primary) !important;
+}
+
+#fileDropzone:hover {
+  border-color: var(--color-primary) !important;
+  background: rgba(59, 130, 246, 0.05) !important;
+}
+
+#fileDropzone.dragover {
+  border-color: #10b981 !important;
+  background: rgba(16, 185, 129, 0.05) !important;
+}
