@@ -1,7 +1,7 @@
 // PhishGuard Browser Extension Service Worker
 // Handles network requests to the local Flask backend to avoid CORS limitations.
 
-const FLASK_SERVER = "http://127.0.0.1:5000";
+const FLASK_SERVER = "https://phishguard-api-fzds.onrender.com";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "predict") {

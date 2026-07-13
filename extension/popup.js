@@ -1,7 +1,7 @@
 // PhishGuard Extension Popup Controller
 // Binds UI controls, pings the backend, and handles manual text checks.
 
-const FLASK_SERVER = "http://127.0.0.1:5000";
+const FLASK_SERVER = "https://phishguard-api-fzds.onrender.com";
 
 document.addEventListener("DOMContentLoaded", () => {
   const modelSelect = document.getElementById("extModelSelect");
@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnAnalyze = document.getElementById("btnAnalyze");
   const connectionStatus = document.getElementById("connectionStatus");
   const resultsBlock = document.getElementById("resultsBlock");
-  
+
   const resIcon = document.getElementById("resIcon");
   const resTitle = document.getElementById("resTitle");
   const resSub = document.getElementById("resSub");
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resultsBlock.className = "card result-card"; // Reset styling
 
     const isPhish = data.prediction === "Phishing";
-    
+
     if (isPhish) {
       resultsBlock.classList.add("phish");
       resIcon.textContent = "🚨";
