@@ -366,18 +366,12 @@ def analyze_text_rules(text):
     }
 
 def compute_hybrid_verdict(ml_label, ml_confidence, metadata, rules_analysis):
-    # Convert ML prediction to a probability (0.0 to 1.0)
+    # Convert ML prediction to a base probability (0.0 to 1.0)
     ml_prob = ml_confidence if ml_confidence is not None else 0.5
     if ml_label == 'Safe':
         ml_prob = 1.0 - ml_prob
         
-    # Scale rules score (0 to 100) to 0.0 to 1.0
-    rules_prob = rules_analysis['score'] / 100.0
-    
-    # Base combined probability: 40% ML text intent, 60% technical metadata/link markers
-    combined_prob = (ml_prob * 0.4) + (rules_prob * 0.6)
-    
-    # Context Fusion & Overrides
+    combined_prob = ml_prob
     reasons = []
     
     # 1. Absolute Trust Override: Authentic Gov/Edu/Corporate Brand domain
@@ -387,18 +381,19 @@ def compute_hybrid_verdict(ml_label, ml_confidence, metadata, rules_analysis):
             combined_prob = min(combined_prob, 0.15) # Force Low Risk
             reasons.append("Sender verified as official institutional infrastructure (bypassing text suspicion).")
             
-    # 2. Critical Threat Overrides
-    if metadata['domain_spoof']:
-        combined_prob = max(combined_prob, 0.85)
-        reasons.append("Sender domain exhibits lookalike brand-spoofing patterns.")
-        
-    if metadata['attachment_risk'] == 'High Risk':
-        combined_prob = max(combined_prob, 0.90)
-        reasons.append("High-risk executable attachment detected.")
-        
-    if metadata['suspicious_url']:
-        combined_prob = max(combined_prob, 0.80)
-        reasons.append("Link checker flagged malicious IP-based or abnormally long URLs.")
+    # 2. Critical Threat Overrides (Only check if not verified safe)
+    else:
+        if metadata['domain_spoof']:
+            combined_prob = max(combined_prob, 0.85)
+            reasons.append("Sender domain exhibits lookalike brand-spoofing patterns.")
+            
+        if metadata['attachment_risk'] == 'High Risk':
+            combined_prob = max(combined_prob, 0.90)
+            reasons.append("High-risk executable attachment detected.")
+            
+        if metadata['suspicious_url']:
+            combined_prob = max(combined_prob, 0.80)
+            reasons.append("Link checker flagged malicious IP-based or abnormally long URLs.")
 
     # Determine final verdict mapping
     final_score = int(combined_prob * 100)
