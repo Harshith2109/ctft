@@ -121,8 +121,10 @@ function handleGmail() {
   messages.forEach(msg => {
     if (msg.querySelector(".phishguard-container")) return; // Already scanned/injected
     
-    // Locates message header buttons container
-    const headerContainer = msg.querySelector(".gE.iv");
+    // Locates message header container (checks primary buttons first, then fallback to sender area)
+    const headerContainer = msg.querySelector(".gE.iv") || 
+                            msg.querySelector(".gH") || 
+                            msg.querySelector("span.gD")?.parentNode;
     if (!headerContainer) return;
     
     // Inject scan action button
@@ -147,14 +149,16 @@ function handleOutlook() {
   readingPanes.forEach(pane => {
     if (pane.querySelector(".phishguard-container")) return; // Already scanned/injected
     
-    // Find subject/header details area
+    // Find subject/header details area (checks conversation header, persona header, or sender title parent)
     const headerContainer = pane.querySelector("div[data-app-section='ConversationReadingPaneHeader']") || 
                             pane.querySelector(".PersonaHeader") ||
+                            pane.querySelector("span[title*='@']")?.parentNode ||
                             pane.querySelector("div[role='heading']")?.parentNode;
     if (!headerContainer) return;
     
     const container = document.createElement("div");
     container.className = "phishguard-container";
+    container.style.display = "inline-block";
     
     const button = document.createElement("button");
     button.className = "phishguard-btn";
