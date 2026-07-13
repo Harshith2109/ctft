@@ -224,9 +224,11 @@ function handleOutlook() {
   });
 }
 
-// Performs analysis for Gmail messages
 async function runGmailAudit(msgNode, badge) {
   try {
+    // Wait 450ms to allow asynchronous attachment nodes to fully render in the DOM
+    await new Promise(resolve => setTimeout(resolve, 450));
+    
     // 1. Scrape Sender
     const senderNode = msgNode.querySelector("span.gD");
     const sender = senderNode ? senderNode.getAttribute("email") || senderNode.textContent : "Unknown Sender";
@@ -266,9 +268,11 @@ async function runGmailAudit(msgNode, badge) {
   }
 }
 
-// Performs analysis for Outlook reading pane
 async function runOutlookAudit(paneNode, badge) {
   try {
+    // Wait 450ms to allow asynchronous attachment nodes to fully render in the DOM
+    await new Promise(resolve => setTimeout(resolve, 450));
+    
     // 1. Scrape Sender
     const senderNode = paneNode.querySelector("span[title*='@']") || paneNode.querySelector(".PersonaHeader");
     const sender = senderNode ? senderNode.getAttribute("title") || senderNode.innerText : "Unknown Sender";
