@@ -241,7 +241,7 @@ async function runGmailAudit(msgNode, badge) {
     const bodyText = bodyNode ? bodyNode.innerText : "";
     
     // 4. Scrape Attachments
-    const attachmentNodes = msgNode.querySelectorAll(".aKz, .a5i, .a5a, .att, span.a1a, [role='listitem'] [class*='filename']");
+    const attachmentNodes = msgNode.querySelectorAll(".aQJ, .aKz, .a5i, .a5a, .att, span.a1a, .a6S, [role='listitem'] [class*='filename']");
     let attachment = "None";
     if (attachmentNodes.length > 0) {
       const names = Array.from(attachmentNodes)
