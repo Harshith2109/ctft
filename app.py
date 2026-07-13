@@ -244,19 +244,22 @@ def parse_email_metadata(text):
             domain_spoof = False
 
     # 2. Check attachments
-    attachment_match = re.search(r'(?:attachment|file):\s*([\w\.-]+\.\w+)', text, re.IGNORECASE)
+    attachment_match = re.search(r'(?:attachment|file):\s*([\w\s\.\-\(\)\[\]]+\.\w+)', text, re.IGNORECASE)
     attachment = attachment_match.group(1) if attachment_match else 'None'
     
     if attachment == 'None':
         # Search the entire text for any word ending with a common attachment extension
-        all_words = re.findall(r'\b([\w\.-]+\.(?:pdf|docx|xlsx|txt|exe|zip|png|jpg|gif|rar|exe|bat|scr|vbs|js))\b', text, re.IGNORECASE)
+        # Support spaces, hyphens, and parentheses in filenames
+        all_words = re.findall(r'\b([\w\s\.\-\(\)\[\]]+\.(?:pdf|docx|xlsx|txt|exe|zip|png|jpg|gif|rar|bat|scr|vbs|js))\b', text, re.IGNORECASE)
         if all_words:
             # Take the first match that isn't a top-level domain suffix
             for word in all_words:
-                ext = word.split('.')[-1].lower()
+                word_clean = word.strip()
+                ext = word_clean.split('.')[-1].lower()
                 if ext not in ['com', 'in', 'org', 'net', 'gov', 'mil', 'edu', 'int']:
-                    attachment = word
-                    break
+                    if len(word_clean) < 80:
+                        attachment = word_clean
+                        break
                     
     attachment_risk = 'None'
     if attachment != 'None':
