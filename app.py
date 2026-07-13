@@ -367,6 +367,66 @@ def analyze_text_rules(text):
         'recommended_action': action
     }
 
+def compute_hybrid_verdict(ml_label, ml_confidence, metadata, rules_analysis):
+    # Convert ML prediction to a probability (0.0 to 1.0)
+    ml_prob = ml_confidence if ml_confidence is not None else 0.5
+    if ml_label == 'Safe':
+        ml_prob = 1.0 - ml_prob
+        
+    # Scale rules score (0 to 100) to 0.0 to 1.0
+    rules_prob = rules_analysis['score'] / 100.0
+    
+    # Base combined probability: 40% ML text intent, 60% technical metadata/link markers
+    combined_prob = (ml_prob * 0.4) + (rules_prob * 0.6)
+    
+    # Context Fusion & Overrides
+    reasons = []
+    
+    # 1. Absolute Trust Override: Authentic Gov/Edu/Corporate Brand domain
+    if metadata['is_verified_brand'] and not metadata['domain_spoof']:
+        # Only override if no active malware attachments or known link scams are embedded
+        if metadata['attachment_risk'] != 'High Risk' and not metadata['suspicious_url']:
+            combined_prob = min(combined_prob, 0.15) # Force Low Risk
+            reasons.append("Sender verified as official institutional infrastructure (bypassing text suspicion).")
+            
+    # 2. Critical Threat Overrides
+    if metadata['domain_spoof']:
+        combined_prob = max(combined_prob, 0.85)
+        reasons.append("Sender domain exhibits lookalike brand-spoofing patterns.")
+        
+    if metadata['attachment_risk'] == 'High Risk':
+        combined_prob = max(combined_prob, 0.90)
+        reasons.append("High-risk executable attachment detected.")
+        
+    if metadata['suspicious_url']:
+        combined_prob = max(combined_prob, 0.80)
+        reasons.append("Link checker flagged malicious IP-based or abnormally long URLs.")
+
+    # Determine final verdict mapping
+    final_score = int(combined_prob * 100)
+    final_verdict = "Phishing" if final_score >= 50 else "Safe"
+    final_confidence = combined_prob if final_verdict == "Phishing" else (1.0 - combined_prob)
+    
+    # Risk grading
+    if final_score >= 75:
+        risk_level = "High Risk"
+        action = "Block sender and isolate links/attachments."
+    elif final_score >= 50:
+        risk_level = "Medium Risk"
+        action = "Verify sender details before clicking links."
+    else:
+        risk_level = "Low Risk"
+        action = "No action required"
+        
+    return {
+        'prediction': final_verdict,
+        'confidence': float(final_confidence),
+        'risk_score': final_score,
+        'risk_level': risk_level,
+        'recommended_action': action,
+        'reasons': reasons if reasons else rules_analysis['found']
+    }
+
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
@@ -401,36 +461,33 @@ def predict():
         except Exception:
             confidence = None
 
-        label = interpret_label(pred, label_encoder)
+        ml_label = interpret_label(pred, label_encoder)
         
         # Calculate Risk and Explainable AI weights
         rules_analysis = analyze_text_rules(text)
         metadata = parse_email_metadata(text)
         xai_weights = explain_prediction(pipeline, text, model_name)
 
-        # Verified official brand domain override (SPF/DKIM alignment simulation)
-        # Fires when SPF sender domain OR DKIM signed-by domain is verified as legitimate
-        if metadata['is_verified_brand'] and not metadata['domain_spoof']:
-            label = 'Safe'
-            confidence = max(confidence or 0.0, 0.97)  # Keep original confidence if already high
+        # Compute Unified Hybrid Decision
+        hybrid = compute_hybrid_verdict(ml_label, confidence, metadata, rules_analysis)
 
         # Update stats
         stats['total_checked'] += 1
-        if label == 'Phishing':
+        if hybrid['prediction'] == 'Phishing':
             stats['phishing_count'] += 1
         else:
             stats['safe_count'] += 1
 
         # Store prediction in DB
         store_prediction(
-            text, label, confidence, model_name,
-            metadata['sender'], rules_analysis['score'],
+            text, hybrid['prediction'], hybrid['confidence'], model_name,
+            metadata['sender'], hybrid['risk_score'],
             metadata['has_url'], metadata['attachment_risk']
         )
 
         return jsonify({
-            'prediction': label,
-            'confidence': confidence,
+            'prediction': hybrid['prediction'],
+            'confidence': hybrid['confidence'],
             'model_used': model_name,
             'sender': metadata['sender'],
             'domain_spoof': metadata['domain_spoof'],
@@ -442,9 +499,9 @@ def predict():
             'has_url': metadata['has_url'],
             'url_count': metadata['url_count'],
             'suspicious_url': metadata['suspicious_url'],
-            'risk_score': rules_analysis['score'],
-            'risk_level': rules_analysis['level'],
-            'recommended_action': rules_analysis['recommended_action'],
+            'risk_score': hybrid['risk_score'],
+            'risk_level': hybrid['risk_level'],
+            'recommended_action': hybrid['recommended_action'],
             'xai_weights': xai_weights,
             'total_checked': stats['total_checked'],
             'phishing_count': stats['phishing_count'],
