@@ -190,7 +190,7 @@ def parse_email_metadata(text):
         official_domains = {
             'paypal': ['paypal.com', 'paypal.co.uk'],
             'netflix': ['netflix.com'],
-            'google': ['google.com'],
+            'google': ['google.com', 'googlemail.com'],
             'microsoft': ['microsoft.com', 'microsoftonline.com'],
             'apple': ['apple.com', 'icloud.com'],
             'amazon': ['amazon.com', 'amazon.in'],
