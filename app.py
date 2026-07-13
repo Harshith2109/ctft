@@ -211,6 +211,7 @@ def parse_email_metadata(text):
     dkim_match = re.search(r'signed-by:\s*([^\n\r]+)', text, re.IGNORECASE)
     dkim_domain = dkim_match.group(1).strip().lower() if dkim_match else ''
     is_dkim_signed = False
+    
     if dkim_domain and not is_verified_brand:
         # Check if DKIM signing domain is from a known official brand subdomain
         for brand in ['paypal', 'netflix', 'google', 'microsoft', 'apple', 'amazon', 'facebook']:
@@ -225,6 +226,15 @@ def parse_email_metadata(text):
                 is_verified_brand = True  # DKIM confirms legitimacy
                 domain_spoof = False
                 break
+                
+    # Auto-verify official institutional/government domains if DKIM signature aligns with sender
+    if email and dkim_domain and not is_verified_brand:
+        trusted_suffixes = ['.gov', '.gov.in', '.nic.in', '.ac.in', '.edu', '.edu.in']
+        if any(dkim_domain.endswith(s) or dkim_domain == s.lstrip('.') for s in trusted_suffixes):
+            if domain == dkim_domain or domain.endswith('.' + dkim_domain):
+                is_dkim_signed = True
+                is_verified_brand = True
+                domain_spoof = False
 
     # 2. Check attachments
     attachment_match = re.search(r'attachment:\s*([\w\.-]+\.\w+)', text, re.IGNORECASE)
