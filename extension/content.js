@@ -298,14 +298,64 @@ function renderAuditResult(bodyNode, parentNode, result) {
     ? '<span class="pg-badge danger">⚠ Dangerous Attachment</span>' 
     : (result.attachment_risk === "Low Risk" ? '<span class="pg-badge warning">Attachment Attached</span>' : '<span class="pg-badge success">No Attachments</span>');
 
+  // Build Anomaly List
+  const anomalies = [];
+  if (result.domain_spoof) {
+    anomalies.push(`Sender domain contains lookalikes or mimics a known brand (Detected sender: <code>${result.sender}</code>).`);
+  } else if (result.is_verified_brand) {
+    anomalies.push("Sender domain is verified as official brand infrastructure (SPF/DKIM aligned).");
+  }
+  if (result.is_dkim_signed) {
+    anomalies.push(`DKIM signature cryptographically verified for domain: <code>${result.dkim_domain}</code>.`);
+  } else if (result.dkim_domain) {
+    anomalies.push(`DKIM signature is present but signed by an unrecognized domain: <code>${result.dkim_domain}</code>.`);
+  }
+  if (result.suspicious_url) {
+    anomalies.push("Found suspicious URLs (either containing a raw IP address or having a length exceeding 75 characters).");
+  }
+  if (result.attachment_risk === "High Risk") {
+    anomalies.push(`High-risk executable attachment detected: <code>${result.attachment}</code> (potentially executable).`);
+  } else if (result.attachment_risk === "Low Risk") {
+    anomalies.push(`Low-risk file attachment: <code>${result.attachment}</code>.`);
+  }
+  if (anomalies.length === 0) {
+    anomalies.push("No notable email header anomalies detected.");
+  }
+  const anomaliesHtml = anomalies.map(a => `<li style="margin-bottom: 4px;">${a}</li>`).join("");
+
+  // Build Top 5 XAI rows
+  let xaiRowsHtml = "";
+  if (result.xai_weights && result.xai_weights.length > 0) {
+    result.xai_weights.slice(0, 5).forEach(w => {
+      const isPhishFeature = w.weight > 0;
+      const color = isPhishFeature ? "#fca5a5" : "#a7f3d0";
+      const label = isPhishFeature ? "Phish Indicator" : "Safe Indicator";
+      xaiRowsHtml += `
+        <tr>
+          <td style="padding: 4px 0; color: #94a3b8; font-family: monospace;">${w.word}</td>
+          <td style="padding: 4px 0; color: ${color}; font-weight: 600;">${label}</td>
+          <td style="padding: 4px 0; text-align: right; color: #f1f5f9; font-family: monospace;">${w.weight.toFixed(4)}</td>
+        </tr>
+      `;
+    });
+  } else {
+    xaiRowsHtml = "<tr><td colspan='3' style='color:#94a3b8; text-align:center;'>No words contributed to classifier boundaries.</td></tr>";
+  }
+
   const bannerHtml = `
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h4 style="margin:0; font-size:14px; font-weight:bold; color:${isPhish ? '#ef4444' : '#10b981'};">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+      <h4 style="margin:0; font-size:14px; font-weight:bold; color:${isPhish ? '#ef4444' : '#10b981'}; display:flex; align-items:center; gap:6px;">
         🛡️ PhishGuard Analysis: ${result.prediction} (${(result.confidence * 100).toFixed(1)}% Confidence)
       </h4>
-      <button class="pg-toggle-xai" style="background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer;">
-        Toggle AI Highlights
-      </button>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="pg-toggle-xai" style="background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer; font-weight:600;">
+          Toggle Highlights
+        </button>
+        <button class="pg-toggle-details" style="background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer; font-weight:600;">
+          More Details
+        </button>
+        <button class="pg-close-banner" style="background:transparent; border:none; color:#cbd5e1; font-size:18px; line-height:1; cursor:pointer; font-weight:bold; padding:0 4px;" title="Dismiss Audit Alert">&times;</button>
+      </div>
     </div>
     <div style="font-size:12px; margin-bottom:10px; color:#94a3b8;">
       Risk Score: <strong>${result.risk_score}%</strong> | Recommendation: <strong>${result.recommended_action}</strong>
@@ -316,12 +366,52 @@ function renderAuditResult(bodyNode, parentNode, result) {
       ${linkBadge}
       ${attachmentBadge}
     </div>
+    
+    <!-- Collapsible drawer for advanced details -->
+    <div class="pg-details-drawer" style="display:none; margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.1); font-size:12px; color:#cbd5e1; animation: fadeIn 0.2s ease-out;">
+      <div style="margin-bottom:12px;">
+        <strong style="color:#60a5fa; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Anomaly Audit Log:</strong>
+        <ul style="margin:6px 0 0 16px; padding:0; list-style-type:disc; color:#94a3b8;">
+          ${anomaliesHtml}
+        </ul>
+      </div>
+      <div>
+        <strong style="color:#60a5fa; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Top Classifier Features (XAI):</strong>
+        <table style="width:100%; border-collapse:collapse; margin-top:6px;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); text-align:left; font-size:10px; color:#64748b; text-transform:uppercase;">
+              <th style="padding-bottom:4px; font-weight:600;">Word</th>
+              <th style="padding-bottom:4px; font-weight:600;">Influence</th>
+              <th style="padding-bottom:4px; font-weight:600; text-align:right;">Weight</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${xaiRowsHtml}
+          </tbody>
+        </table>
+      </div>
+    </div>
   `;
   
   banner.innerHTML = bannerHtml;
   
   // Prepend banner to parent container (or at the top of message body)
   parentNode.insertBefore(banner, parentNode.firstChild);
+  
+  // Wire up close button
+  const closeBtn = banner.querySelector(".pg-close-banner");
+  closeBtn.addEventListener("click", () => {
+    banner.remove();
+  });
+  
+  // Wire up details drawer toggling
+  const toggleDetailsBtn = banner.querySelector(".pg-toggle-details");
+  const detailsDrawer = banner.querySelector(".pg-details-drawer");
+  toggleDetailsBtn.addEventListener("click", () => {
+    const isHidden = detailsDrawer.style.display === "none";
+    detailsDrawer.style.display = isHidden ? "block" : "none";
+    toggleDetailsBtn.textContent = isHidden ? "Hide Details" : "More Details";
+  });
   
   // Wire up XAI toggling
   const toggleBtn = banner.querySelector(".pg-toggle-xai");
