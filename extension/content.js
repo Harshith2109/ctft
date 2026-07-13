@@ -243,17 +243,35 @@ async function runGmailAudit(msgNode, badge) {
     const bodyText = bodyNode ? bodyNode.innerText : "";
     
     // 4. Scrape Attachments
-    const attachmentNodes = msgNode.querySelectorAll(".aQJ, .aKz, .a5i, .a5a, .att, span.a1a, .a6S, [role='listitem'] [class*='filename']");
-    let attachment = "None";
-    if (attachmentNodes.length > 0) {
-      const names = Array.from(attachmentNodes)
-        .map(n => n.innerText || n.textContent)
-        .map(t => t.trim())
-        .filter(t => t && t.includes("."));
-      if (names.length > 0) {
-        attachment = names[0];
+    // Heuristic 1: Look for standard Gmail attachment elements (including span.aV3)
+    const attachmentNodes = msgNode.querySelectorAll(".aQJ, .aKz, .a5i, .a5a, .att, span.a1a, span.aV3, .a6S, [role='listitem'] [class*='filename']");
+    let attachmentList = [];
+    
+    attachmentNodes.forEach(n => {
+      const text = (n.innerText || n.textContent || "").trim();
+      if (text && text.includes(".")) {
+        attachmentList.push(text);
       }
-    }
+    });
+    
+    // Heuristic 2 (Bulletproof): Find all download/attachment anchor links
+    const attachmentLinks = msgNode.querySelectorAll("a[href*='view=att'], a[href*='disp=safe'], a[href*='disp=attd'], a[href*='disp=inline']");
+    attachmentLinks.forEach(link => {
+      const title = link.getAttribute("title") || "";
+      const label = link.getAttribute("aria-label") || "";
+      const text = link.innerText || "";
+      
+      [title, label, text].forEach(val => {
+        const cleaned = val.trim();
+        const fileMatch = cleaned.match(/[\w\.-]+\.(?:pdf|docx|xlsx|txt|exe|zip|png|jpg|gif|rar|exe|bat|scr|vbs|js)/i);
+        if (fileMatch) {
+          attachmentList.push(fileMatch[0]);
+        }
+      });
+    });
+    
+    attachmentList = [...new Set(attachmentList)];
+    const attachment = attachmentList.length > 0 ? attachmentList[0] : "None";
     
     // Assemble text payload
     const textToAnalyze = `From: ${sender}\nSubject: ${subject}\nAttachment: ${attachment}\n\n${bodyText}`;
