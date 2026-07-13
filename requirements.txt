@@ -4,3 +4,4 @@ scikit-learn>=1.0.0
 joblib>=1.0.0
 numpy
 gunicorn>=20.0.0
+flask-cors
