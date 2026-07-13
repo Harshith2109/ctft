@@ -1,0 +1,509 @@
+
+text,label
+"Urgent: verify your account immediately. Click here to verify your account - Ref #1",phishing
+"Your bank account has been suspended. Verify now using the secure link - Ref #2",phishing
+"Congratulations! You are a winner. Click here to claim your free prize. Code: WIN3",phishing
+"Security alert: unusual activity detected on your account. Verify your identity now.",phishing
+"Password reset required. Click here to reset your password and secure your account.",phishing
+"Update billing information to avoid service interruption. Click to update - Ref #6",phishing
+"Important: confirm your payment details to avoid suspension. Click here.",phishing
+"Please verify your identity by clicking the link below to continue using your account.",phishing
+"Free gift card available — click here to claim before it expires. Code: FREE8",phishing
+"Action required: confirm your account now to avoid deactivation. Reference #9",phishing
+"Urgent: your mailbox will be deactivated. Verify now to keep access. Ref #10",phishing
+"Click here to claim your reward voucher worth $500. Limited time offer. Ref #11",phishing
+"Your payment was declined. Please update billing information immediately.",phishing
+"We've detected a login from a new device. Verify it's you by clicking this link.",phishing
+"Winner notification: you have been selected. Click here to accept your prize. #14",phishing
+"Free subscription available — follow this link to activate. Ref #15",phishing
+"Confirm your account details to avoid security restrictions. Click now.",phishing
+"Important security update: reset your password here. Immediate action required.",phishing
+"Verify your identity to release a pending payment. Click the secure link.",phishing
+"Account suspended: verify information to restore access. Click here. #19",phishing
+"Urgent notification: billing info required. Click to update your account. #20",phishing
+"Click here to confirm your prize claim and provide shipping details. #21",phishing
+"Security notice: suspicious sign-in detected. Verify to prevent account lock. #22",phishing
+"Reset your password now to keep your account secure. Follow this link. #23",phishing
+"You've been selected for a free trial. Click here to claim it. #24",phishing
+"Action required: your account will be closed unless you verify now. #25",phishing
+"Verify payment to receive your pending refund. Click the link. #26",phishing
+"Free rewards waiting: click here to redeem. Offer ends soon. #27",phishing
+"Urgent: confirm recipient details to release funds. Click now. #28",phishing
+"Your account has unusual activity. Verify access immediately using this link. #29",phishing
+"Click here to update your contact information and avoid service suspension. #30",phishing
+"You have a pending invoice refund. Verify to claim. Click here. #31",phishing
+"Congratulations! You won an exclusive offer. Click to claim. #32",phishing
+"Account security alert: confirm your password to continue. Click here. #33",phishing
+"Verify your identity to avoid transaction reversal. Follow link. #34",phishing
+"Free bonus available — click here to accept. Limited spots. #35",phishing
+"Immediate action required: verify payment method to avoid interruption. #36",phishing
+"Click here to confirm your delivery details and claim the package. #37",phishing
+"Important: update your account settings to keep service active. #38",phishing
+"You've been chosen as a winner. Provide details via this link. #39",phishing
+"Security alert: change your password immediately via the provided link. #40",phishing
+"Verify billing to prevent account suspension. Click to update. #41",phishing
+"Click here to confirm your subscription and receive free credits. #42",phishing
+"Urgent: suspicious activity requires verification. Click the secure link. #43",phishing
+"Your package is on hold. Click here to confirm delivery address. #44",phishing
+"Free entry: click to register and claim your reward. #45",phishing
+"Confirm your account now to avoid service termination. Click here. #46",phishing
+"Verify your payment details to receive an important notice. Click now. #47",phishing
+"Security notice: update your credentials to avoid lockout. Click here. #48",phishing
+"Congratulations! Claim your free voucher by clicking here. #49",phishing
+"Immediate verification required: confirm identity here to proceed. #50",phishing
+"Click here to update your contact and secure your account. #51",phishing
+"Free gift inside — click to see your reward. Offer limited. #52",phishing
+"Your account is at risk. Reset password via this link immediately. #53",phishing
+"Verify payment to avoid interruption of services. Click here. #54",phishing
+"Win a prize! Click to enter and claim your reward. #55",phishing
+"Urgent action: confirm recent transaction to prevent chargeback. #56",phishing
+"Click here to confirm your email and unlock an exclusive offer. #57",phishing
+"Security: verify account details to prevent unauthorized access. #58",phishing
+"Free trial activation: click here to start now. #59",phishing
+"Your password will expire. Reset it now through this secure link. #60",phishing
+"Account verification required to receive your funds. Click here. #61",phishing
+"Click to confirm your identity and collect your prize. #62",phishing
+"Urgent billing update required — click here to avoid suspension. #63",phishing
+"Verify your account to enable new features. Click the link. #64",phishing
+"Free cashback offer — claim now by clicking here. #65",phishing
+"Security alert: please verify this activity by following the link. #66",phishing
+"Click here to confirm your delivery and avoid return fees. #67",phishing
+"Immediate: update your payment info to continue service. #68",phishing
+"You've won! Click to claim your gift card. #69",phishing
+"Verify your mobile number to secure your account. Click link. #70",phishing
+"Free upgrade available — click here to accept. #71",phishing
+"Action required: confirm your details to receive an important message. #72",phishing
+"Click here to confirm recent changes to your account. #73",phishing
+"Security notice: verify your account to remove restrictions. #74",phishing
+"Urgent: your identity must be verified to complete the transfer. #75",phishing
+"Claim your free reward by clicking this link. Limited offer. #76",phishing
+"Verify billing information immediately to avoid fees. Click here. #77",phishing
+"Click to reset password and secure your account now. #78",phishing
+"Congratulations, you're a winner. Provide details through this link. #79",phishing
+"Verify your email to receive an important notice from our bank. #80",phishing
+"Free gift card waiting — click to claim before it expires. #81",phishing
+"Urgent security update: confirm your credentials now. #82",phishing
+"Click here to complete your prize claim form. #83",phishing
+"Immediate verification: confirm your account to proceed with payment. #84",phishing
+"Your account has been flagged. Verify to restore full access. #85",phishing
+"Free access to premium features — click to activate. #86",phishing
+"Verify identity to accept important documents. Click the link. #87",phishing
+"Click here to verify your account and avoid penalties. #88",phishing
+"Urgent: confirm transaction details now to avoid reversal. #89",phishing
+"Claim your reward now by following this secure link. #90",phishing
+"Security alert: suspicious login. Verify via this link immediately. #91",phishing
+"Free donation gift card — click here to receive. #92",phishing
+"Verify your account to receive your pending payout. Click here. #93",phishing
+"Click here to verify and update your shipping address. #94",phishing
+"Immediate: reset your password using the link to avoid lockout. #95",phishing
+"Urgent verification required to complete your registration. #96",phishing
+"Click here to confirm your identity and claim the voucher. #97",phishing
+"Free bonus credits available — click to claim now. #98",phishing
+"Verify payment method to prevent interruption. Click link. #99",phishing
+"Security alert: please confirm your recent activity. Click here. #100",phishing
+"You are a selected winner. Click here to provide shipping details. #101",phishing
+"Urgent: action required on your account. Verify immediately. #102",phishing
+"Click here to verify your identity and receive a reward. #103",phishing
+"Free access code available — click the link to redeem. #104",phishing
+"Important: confirm payment details to receive refund. Click now. #105",phishing
+"Security notice: verify your credentials to avoid suspension. #106",phishing
+"Click here to accept special offer and receive free items. #107",phishing
+"Urgent: confirm email subscription to avoid cancellation. #108",phishing
+"Verify your account for enhanced security. Click here. #109",phishing
+"Winner announcement: click to claim your prize. #110",phishing
+"Click here to confirm the transfer and authorize payment. #111",phishing
+"Immediate action: update billing details to continue service. #112",phishing
+"Free reward waiting — claim it now by clicking here. #113",phishing
+"Verify your identity to unlock a special offer. Click here. #114",phishing
+"Security alert: verify recent login to keep your account safe. #115",phishing
+"Click here to claim exclusive cashback rewards. #116",phishing
+"Urgent: confirm your information to release funds. #117",phishing
+"Free prize inside — click this link to collect. #118",phishing
+"Verify your account to accept the pending shipment. Click here. #119",phishing
+"Click here to reset your password and confirm your identity. #120",phishing
+"Important: click to verify your identity to receive payment. #121",phishing
+"Security update required: verify credentials now. #122",phishing
+"Free gift offer — follow the link to claim. #123",phishing
+"Click here to confirm your order and avoid delay. #124",phishing
+"Urgent verification: confirm your account details immediately. #125",phishing
+"Verify your phone number to secure your account. Click link. #126",phishing
+"Click here to accept a limited-time reward. #127",phishing
+"Security alert: please verify this sign-in attempt. #128",phishing
+"Free trial gift available — claim by clicking here. #129",phishing
+"Verify your account to receive special rewards. Click now. #130",phishing
+"Click here to confirm your refund and provide bank details. #131",phishing
+"Urgent action: validate your identity to unlock funds. #132",phishing
+"Free prize claim: click here to submit your details. #133",phishing
+"Verify your payment details to avoid suspension. Click here. #134",phishing
+"Click here to complete your registration and claim a bonus. #135",phishing
+"Security notice: change your password via this link immediately. #136",phishing
+"Urgent: confirm your account to prevent unauthorized charges. #137",phishing
+"Click here to claim your reward card and verify shipping. #138",phishing
+"Free gift inside — click here to accept. #139",phishing
+"Verify identity now to receive urgent communication. Click here. #140",phishing
+"Click here to confirm your contact and secure delivery. #141",phishing
+"Security alert: update credentials to avoid account lock. #142",phishing
+"Free coupon available — click to redeem. #143",phishing
+"Verify your account details to accept the transfer. Click here. #144",phishing
+"Click here to confirm payment for pending invoice. #145",phishing
+"Urgent verification needed to claim your prize. Click here. #146",phishing
+"Free reward code — follow the link to activate. #147",phishing
+"Verify identity via this link to receive an important notice. #148",phishing
+"Click here to confirm your subscription and get a free gift. #149",phishing
+"Security notice: please verify your recent changes. Click here. #150",phishing
+"Urgent: update your billing to continue service. Click link. #151",phishing
+"Click here to claim exclusive prize from our sponsor. #152",phishing
+"Verify your account to access limited offers. Click now. #153",phishing
+"Free entry to sweepstakes — claim by clicking here. #154",phishing
+"Security alert: validate your credentials to remain active. #155",phishing
+"Click here to confirm your order and receive a bonus. #156",phishing
+"Urgent verification: confirm identity to receive payment. #157",phishing
+"Free membership available — click to activate. #158",phishing
+"Verify your email to unlock exclusive content. Click here. #159",phishing
+"Click here to claim your gift certificate and verify address. #160",phishing
+"Important: confirm payment details to prevent account hold. #161",phishing
+"Security message: reset your password via this link. #162",phishing
+"Free bonus reward — click now to redeem. #163",phishing
+"Verify your account to stop pending suspension. Click here. #164",phishing
+"Click here to confirm your prize eligibility and provide info. #165",phishing
+"Urgent: action required to secure your account. Verify now. #166",phishing
+"Free gift redemption — follow this link to claim. #167",phishing
+"Verify your information to receive a payment. Click here. #168",phishing
+"Click here to reset credentials and secure your profile. #169",phishing
+"Security alert: confirm this login attempt by clicking here. #170",phishing
+"Free reward waiting — verify now to obtain it. #171",phishing
+"Verify your payment method to process your refund. Click here. #172",phishing
+"Urgent: confirm account details to lift restrictions. #173",phishing
+"Click here to claim a special reward available to few users. #174",phishing
+"Free trial and bonus — activate by clicking here. #175",phishing
+"Verify your identity to receive urgent notice. Click here. #176",phishing
+"Click here to confirm your details for prize delivery. #177",phishing
+"Security notice: update your credentials immediately. #178",phishing
+"Free offer inside — click to view and claim. #179",phishing
+"Verify account now to prevent cancellation. Click here. #180",phishing
+"Click here to claim your bonus credit package. #181",phishing
+"Urgent verification required: confirm payment info. #182",phishing
+"Free gift card link — click to claim. #183",phishing
+"Verify your identity to receive a limited-time offer. #184",phishing
+"Click here to accept your prize and verify shipping. #185",phishing
+"Security alert: reset password to secure account. Click here. #186",phishing
+"Free rewards available — claim via this link. #187",phishing
+"Verify your account details to release funds. Click here. #188",phishing
+"Click here to confirm your recent transaction and verify identity. #189",phishing
+"Urgent: validate your credentials to avoid account lock. #190",phishing
+"Free prize notification — click to claim now. #191",phishing
+"Verify your contact details to receive your package. Click here. #192",phishing
+"Click here to reset password and re-enable access. #193",phishing
+"Security alert: please verify your account activity. Click here. #194",phishing
+"Free prize claim — follow link and provide details. #195",phishing
+"Verify your payment to process urgent transaction. Click here. #196",phishing
+"Urgent: confirm your identity to release payment. Click here. #197",phishing
+"Click here to claim your free voucher before it expires. #198",phishing
+"Verify your account for priority support. Click here. #199",phishing
+"Free membership reward — claim by clicking here. #200",phishing
+"Click here to secure your account and verify identity. #201",phishing
+"Urgent notification: update billing information now. #202",phishing
+"Verify your details to receive an important financial notice. Click here. #203",phishing
+"Free gift card waiting — click here to claim your reward. #204",phishing
+"Click here to confirm your prize winnings and verify shipping. #205",phishing
+"Security alert: confirm account changes to prevent fraud. Click here. #206",phishing
+"Verify your information to receive a compensation. Click link. #207",phishing
+"Free offer: click here to enroll and claim benefits. #208",phishing
+"Urgent action needed: confirm account ownership by clicking here. #209",phishing
+"Click here to verify your identity and get exclusive access. #210",phishing
+"Verify payment details to receive refund notice. Click here. #211",phishing
+"Free reward available — click to accept and verify shipping. #212",phishing
+"Security: verify your login attempt via this link to stay secure. #213",phishing
+"Click here to claim your promotional gift card. #214",phishing
+"Urgent verification required to process your request. Click here. #215",phishing
+"Free bonus reward — click link to receive details. #216",phishing
+"Verify your account now to unlock a special offer. Click here. #217",phishing
+"Click here to confirm your payment and avoid interruption. #218",phishing
+"Security notice: reset your password using the provided link. #219",phishing
+"Free contest entry — follow link to submit details. #220",phishing
+"Verify your identity to receive immediate assistance. Click here. #221",phishing
+"Click here to claim gift voucher assigned to your account. #222",phishing
+"Urgent: update payment information to prevent closure. Click here. #223",phishing
+"Free prize inside — verify now by clicking the link. #224",phishing
+"Verify your account for a pending reward. Click here. #225",phishing
+"Click here to confirm the delivery and provide address. #226",phishing
+"Security alert: immediate verification required via this link. #227",phishing
+"Free coupon code — click here to redeem. #228",phishing
+"Verify payment method to complete your refund. Click here. #229",phishing
+"Click here to confirm account recovery and reset password. #230",phishing
+"Urgent: your benefits require verification. Click here. #231",phishing
+"Free reward offer — claim now via this link. #232",phishing
+"Verify your contact to receive urgent notifications. Click here. #233",phishing
+"Click here to accept your prize and verify identity. #234",phishing
+"Security message: confirm this activity using the provided link. #235",phishing
+"Free bonus available — click to activate and claim. #236",phishing
+"Verify your account now to continue services. Click here. #237",phishing
+"Click here to claim a reward from our partner. #238",phishing
+"Urgent action: confirm your identity to receive payment. Click here. #239",phishing
+"Free offer waiting — follow link to claim. #240",phishing
+"Verify your account to receive a special delivery. Click here. #241",phishing
+"Click here to confirm your prize and provide tax info. #242",phishing
+"Security alert: verify account access to avoid lockout. #243",phishing
+"Free credits available — click to add to your account. #244",phishing
+"Verify payment details to accept funds. Click here. #245",phishing
+"Click here to confirm your registration and claim a bonus. #246",phishing
+"Urgent: verify your details to receive an important notice. #247",phishing
+"Free giveaway — click here to enter and claim. #248",phishing
+"Verify your address to receive your package. Click here. #249",phishing
+"Click here to claim your free membership reward. #250",phishing
+
+"Meeting invitation: Project sync meeting scheduled. Please review agenda.",legitimate
+"Project update: Completed tasks for sprint 1. See details attached.",legitimate
+"Invoice attached: Invoice #1 for services rendered. Please process.",legitimate
+"Holiday announcement: Office closed next Friday for public holiday.",legitimate
+"Team lunch planned for next Wednesday. RSVP if you can attend.",legitimate
+"Weekly report: Summary of metrics and progress for week 1.",legitimate
+"Event confirmation: Your registration is confirmed. Details inside.",legitimate
+"Reminder: Performance review meeting scheduled on Friday.",legitimate
+"Newsletter: Company updates and news for subscribers.",legitimate
+"Minutes attached: Notes from today's client meeting.",legitimate
+"Meeting invitation: Calendar invite for design review attached.",legitimate
+"Project update: New feature branch merged into main. See changelog.",legitimate
+"Invoice attached: Please find invoice #2 for this month's services.",legitimate
+"Holiday announcement: Annual shutdown scheduled for next month.",legitimate
+"Team outing details: RSVP and transport information.",legitimate
+"Weekly report: Team accomplishments and blockers.",legitimate
+"Event confirmation: Your seat is reserved for the webinar.",legitimate
+"Reminder: Submit expenses by end of week for reimbursement.",legitimate
+"Newsletter: Product tips and best practices edition.",legitimate
+"Minutes attached: Action items and owners from the meeting.",legitimate
+"Meeting invitation: Q3 planning session invite enclosed.",legitimate
+"Project update: Documentation updated with latest API changes.",legitimate
+"Invoice attached: Invoice #3 for your review and payment.",legitimate
+"Holiday announcement: Office hours will vary next week.",legitimate
+"Team lunch: Menu and dietary options listed. Please confirm.",legitimate
+"Weekly report: Key outcomes and next steps.",legitimate
+"Event confirmation: Thank you for registering for the conference.",legitimate
+"Reminder: Training session starts at 10:00 AM tomorrow.",legitimate
+"Newsletter: Highlights from last month's initiatives.",legitimate
+"Minutes attached: Summary of engineering retrospective.",legitimate
+"Meeting invitation: Client onboarding call details attached.",legitimate
+"Project update: Beta release deployed to staging environment.",legitimate
+"Invoice attached: Billing statement for account #4.",legitimate
+"Holiday announcement: Company picnic scheduled for summer.",legitimate
+"Team outing: Volunteer signup for charity event.",legitimate
+"Weekly report: Sales numbers and pipeline updates.",legitimate
+"Event confirmation: Workshop registration confirmed.",legitimate
+"Reminder: Please complete the satisfaction survey.",legitimate
+"Newsletter: Team spotlight and recognition.",legitimate
+"Minutes attached: Procurement meeting notes.",legitimate
+"Meeting invitation: All-hands meeting invite.",legitimate
+"Project update: Roadmap changes and timelines updated.",legitimate
+"Invoice attached: Invoice #5 due in 30 days.",legitimate
+"Holiday announcement: Observance day for staff.",legitimate
+"Team lunch: Venue change notification.",legitimate
+"Weekly report: Customer feedback summary.",legitimate
+"Event confirmation: Ticket information inside.",legitimate
+"Reminder: Goal-setting workshop next week.",legitimate
+"Newsletter: Security best practices and tips.",legitimate
+"Minutes attached: Budget planning meeting notes.",legitimate
+"Meeting invitation: Design handoff meeting scheduled.",legitimate
+"Project update: Performance improvements deployed.",legitimate
+"Invoice attached: Please review and confirm payment.",legitimate
+"Holiday announcement: Office closed for observance.",legitimate
+"Team lunch: Final headcount requested by Friday.",legitimate
+"Weekly report: Marketing campaign metrics.",legitimate
+"Event confirmation: Webinar link and joining instructions.",legitimate
+"Reminder: Code freeze starts next Monday.",legitimate
+"Newsletter: Upcoming feature highlights.",legitimate
+"Minutes attached: Sales enablement meeting notes.",legitimate
+"Meeting invitation: Sprint planning invite attached.",legitimate
+"Project update: Database migration completed successfully.",legitimate
+"Invoice attached: Billing statement for client account.",legitimate
+"Holiday announcement: Office closure for maintenance.",legitimate
+"Team outing: Charity run registration details.",legitimate
+"Weekly report: Support ticket trends and resolutions.",legitimate
+"Event confirmation: Conference badge and schedule.",legitimate
+"Reminder: Submit quarterly goals by end of month.",legitimate
+"Newsletter: Leadership message and company news.",legitimate
+"Minutes attached: Product planning meeting summary.",legitimate
+"Meeting invitation: Feedback session for beta users.",legitimate
+"Project update: UI enhancements now available.",legitimate
+"Invoice attached: Statement for subscription renewal.",legitimate
+"Holiday announcement: Reduced hours during the holiday period.",legitimate
+"Team lunch: Dietary preferences request.",legitimate
+"Weekly report: Development sprint summary.",legitimate
+"Event confirmation: Training materials and schedule.",legitimate
+"Reminder: Team town hall starts at 3 PM.",legitimate
+"Newsletter: Developer tips and tools.",legitimate
+"Minutes attached: Cross-functional kickoff notes.",legitimate
+"Meeting invitation: One-on-one meeting scheduled.",legitimate
+"Project update: Customer support SLA changes communicated.",legitimate
+"Invoice attached: Please see attached billing invoice #6.",legitimate
+"Holiday announcement: Observed public holiday next month.",legitimate
+"Team outing: Picnic logistics and RSVP.",legitimate
+"Weekly report: Feature adoption statistics.",legitimate
+"Event confirmation: Registration and access details provided.",legitimate
+"Reminder: Complete mandatory compliance training.",legitimate
+"Newsletter: Security patch rollout schedule.",legitimate
+"Minutes attached: HR policy update meeting.",legitimate
+"Meeting invitation: Product demo session invite.",legitimate
+"Project update: Migration timeline and checkpoints.",legitimate
+"Invoice attached: Payment reminder for invoice #7.",legitimate
+"Holiday announcement: Office closed for national holiday.",legitimate
+"Team lunch: Confirm attendance by EOD.",legitimate
+"Weekly report: Operations summary and KPIs.",legitimate
+"Event confirmation: Meetup location and time.",legitimate
+"Reminder: Vendor onboarding documents required.",legitimate
+"Newsletter: Customer success stories and highlights.",legitimate
+"Minutes attached: Engineering all-hands notes.",legitimate
+"Meeting invitation: Security review meeting scheduled.",legitimate
+"Project update: Analytics dashboard refreshed with new data.",legitimate
+"Invoice attached: Invoice #8 for your records.",legitimate
+"Holiday announcement: Office scheduling update.",legitimate
+"Team outing: Schedule and meetup point.",legitimate
+"Weekly report: Backend performance and incidents.",legitimate
+"Event confirmation: Speaker lineup and agenda.",legitimate
+"Reminder: Submit time-off requests for next quarter.",legitimate
+"Newsletter: Product roadmap announcements.",legitimate
+"Minutes attached: Client success meeting summary.",legitimate
+"Meeting invitation: Planning session for Q4 initiatives.",legitimate
+"Project update: Documentation revisions and links.",legitimate
+"Invoice attached: Final invoice for contract #9.",legitimate
+"Holiday announcement: Company holiday schedule posted.",legitimate
+"Team lunch: New venue information included.",legitimate
+"Weekly report: QA pass rates and defect counts.",legitimate
+"Event confirmation: Workshop materials and access.",legitimate
+"Reminder: Update your contact information in HR portal.",legitimate
+"Newsletter: Engineering blog and updates.",legitimate
+"Minutes attached: Product strategy meeting notes.",legitimate
+"Meeting invitation: Design critique scheduled tomorrow.",legitimate
+"Project update: Release notes and changelog attached.",legitimate
+"Invoice attached: Monthly billing for subscription services.",legitimate
+"Holiday announcement: Early office closure on Friday.",legitimate
+"Team outing: Charity volunteering details enclosed.",legitimate
+"Weekly report: Customer satisfaction scores.",legitimate
+"Event confirmation: Confirmation email with ticket attached.",legitimate
+"Reminder: Security training completion due soon.",legitimate
+"Newsletter: Company milestones and achievements.",legitimate
+"Minutes attached: Architecture review meeting summary.",legitimate
+"Meeting invitation: Remote workshop link and instructions.",legitimate
+"Project update: Continuous integration pipeline fixed.",legitimate
+"Invoice attached: Statement for services provided in June.",legitimate
+"Holiday announcement: Office closed for observance day.",legitimate
+"Team lunch: Final menu choices requested.",legitimate
+"Weekly report: Marketing campaign performance overview.",legitimate
+"Event confirmation: Access link and instructions provided.",legitimate
+"Reminder: Please complete the survey sent earlier.",legitimate
+"Newsletter: New hire introductions and bios.",legitimate
+"Minutes attached: Sales meeting action items.",legitimate
+"Meeting invitation: Quarterly business review meeting.",legitimate
+"Project update: Security patch applied successfully.",legitimate
+"Invoice attached: Payment details for invoice #10.",legitimate
+"Holiday announcement: Seasonal hours and support times.",legitimate
+"Team outing: Parking and meetup details.",legitimate
+"Weekly report: Engineering velocity and metrics.",legitimate
+"Event confirmation: Speaker resources and slides attached.",legitimate
+"Reminder: Update project status in the tracker.",legitimate
+"Newsletter: Tips for remote collaboration.",legitimate
+"Minutes attached: Product launch checklist and owners.",legitimate
+"Meeting invitation: Follow-up meeting for stakeholder feedback.",legitimate
+"Project update: UX improvements released to production.",legitimate
+"Invoice attached: Billing statement for client services.",legitimate
+"Holiday announcement: Office closed for public holiday next week.",legitimate
+"Team lunch: Dietary needs survey reminder.",legitimate
+"Weekly report: Customer onboarding metrics.",legitimate
+"Event confirmation: Registration confirmation and details.",legitimate
+"Reminder: Complete your timesheet by Friday evening.",legitimate
+"Newsletter: Best practices for code reviews.",legitimate
+"Minutes attached: Cross-team sync summary.",legitimate
+"Meeting invitation: Town hall invite and agenda.",legitimate
+"Project update: Backend bug fixes deployed.",legitimate
+"Invoice attached: Please review invoice #11 at your convenience.",legitimate
+"Holiday announcement: Company holiday calendar updated.",legitimate
+"Team outing: Volunteer event and signup link.",legitimate
+"Weekly report: Support escalations and resolutions.",legitimate
+"Event confirmation: Networking event details enclosed.",legitimate
+"Reminder: Policies updated in the employee handbook.",legitimate
+"Newsletter: Engineering highlights and tips.",legitimate
+"Minutes attached: Compliance training summary.",legitimate
+"Meeting invitation: Review meeting for the new design.",legitimate
+"Project update: Monitoring improvements and alerts added.",legitimate
+"Invoice attached: Statement for past month services.",legitimate
+"Holiday announcement: Closure for annual observance.",legitimate
+"Team lunch: Event canceled due to scheduling conflict.",legitimate
+"Weekly report: Financial summary and forecasts.",legitimate
+"Event confirmation: Confirmation and access code provided.",legitimate
+"Reminder: Submit feedback for the new policy draft.",legitimate
+"Newsletter: Product tips and user stories.",legitimate
+"Minutes attached: Retrospective action items.",legitimate
+"Meeting invitation: Client demo scheduled at 2 PM.",legitimate
+"Project update: Performance optimizations completed.",legitimate
+"Invoice attached: Final notice for invoice #12.",legitimate
+"Holiday announcement: Observance details for upcoming break.",legitimate
+"Team outing: RSVP reminder for next Friday.",legitimate
+"Weekly report: Deployment summary and health checks.",legitimate
+"Event confirmation: Workshop materials and credentials.",legitimate
+"Reminder: Complete mandatory security checklist.",legitimate
+"Newsletter: Company events and upcoming conferences.",legitimate
+"Minutes attached: Strategy planning session notes.",legitimate
+"Meeting invitation: Onsite visit scheduled next month.",legitimate
+"Project update: API changes and migration notes.",legitimate
+"Invoice attached: Billing record for client account #13.",legitimate
+"Holiday announcement: Early closure for staff event.",legitimate
+"Team lunch: Catering details and menu options.",legitimate
+"Weekly report: Product usage and engagement metrics.",legitimate
+"Event confirmation: Your registration has been processed.",legitimate
+"Reminder: Update your emergency contact information.",legitimate
+"Newsletter: Team achievements and recognition.",legitimate
+"Minutes attached: Meeting recap and decisions made.",legitimate
+"Meeting invitation: Partner sync call scheduled.",legitimate
+"Project update: Documentation changes pushed to repo.",legitimate
+"Invoice attached: Statement for services rendered in July.",legitimate
+"Holiday announcement: Office schedule for the holiday period.",legitimate
+"Team outing: Logistics for the company retreat.",legitimate
+"Weekly report: QA summaries and release notes.",legitimate
+"Event confirmation: Agenda and speaker details included.",legitimate
+"Reminder: Update your project timelines in the tracker.",legitimate
+"Newsletter: Security reminders and suggested practices.",legitimate
+"Minutes attached: Budget review meeting notes.",legitimate
+"Meeting invitation: Product roadmap discussion invite.",legitimate
+"Project update: Server maintenance completed successfully.",legitimate
+"Invoice attached: Invoice #14 for monthly services.",legitimate
+"Holiday announcement: Company observance scheduled next week.",legitimate
+"Team lunch: Transportation and meetup suggestions.",legitimate
+"Weekly report: Customer success metrics and highlights.",legitimate
+"Event confirmation: Tickets and joining details provided.",legitimate
+"Reminder: Submit your end-of-quarter reports soon.",legitimate
+"Newsletter: Engineering news and releases.",legitimate
+"Minutes attached: Sales pipeline review notes.",legitimate
+"Meeting invitation: Design sync and review scheduled.",legitimate
+"Project update: Feature flag rollout details.",legitimate
+"Invoice attached: Billing information for subscription renewal.",legitimate
+"Holiday announcement: Observance day and schedule shared.",legitimate
+"Team outing: RSVP and dietary preferences requested.",legitimate
+"Weekly report: Release readiness and deployment notes.",legitimate
+"Event confirmation: Your registration details are attached.",legitimate
+"Reminder: Complete the customer feedback form.",legitimate
+"Newsletter: Company culture highlights and news.",legitimate
+"Minutes attached: Technical design discussion summary.",legitimate
+"Meeting invitation: Budget planning and allocation meeting.",legitimate
+"Project update: Security audits completed with findings.",legitimate
+"Invoice attached: Payment request for outstanding balance.",legitimate
+"Holiday announcement: Office closed for public holiday next month.",legitimate
+"Team lunch: Time and location confirmed. See details.",legitimate
+"Weekly report: Incident response summary and follow-ups.",legitimate
+"Event confirmation: Details for the upcoming meetup included.",legitimate
+"Reminder: Update your profile on the internal directory.",legitimate
+"Newsletter: Product release notes and highlights.",legitimate
+"Minutes attached: Customer interview notes and insights.",legitimate
+"Meeting invitation: Internal demo session scheduled tomorrow.",legitimate
+"Project update: Rollback plan and mitigation steps documented.",legitimate
+"Invoice attached: Final invoice for project deliverables.",legitimate
+"Holiday announcement: Adjusted office hours for the season.",legitimate
+"Team outing: Volunteer event logistics and signup.",legitimate
+"Weekly report: Team velocity and issue tracker summary.",legitimate
+"Event confirmation: Access link has been emailed to you.",legitimate
+"Reminder: Complete your mandatory compliance course this week.",legitimate
+"Newsletter: Upcoming product webinars and sessions.",legitimate
+"Minutes attached: Product prioritization meeting notes.",legitimate
+"Meeting invitation: Kickoff meeting for the new initiative.",legitimate
+"Project update: Release candidate deployed to staging environment.",legitimate
+"Invoice attached: Billing notice for service period ending soon.",legitimate
+"Holiday announcement: Company holiday calendar posted online.",legitimate
+"Team lunch: Final reminder to RSVP for seating.",legitimate

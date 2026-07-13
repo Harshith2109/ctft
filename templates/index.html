@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI-Based Phishing Email Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* Custom dynamic XAI highlighting colors */
+        .xai-phish {
+            border-bottom: 2px solid var(--color-danger);
+            border-radius: 3px;
+            padding: 1px 3px;
+            font-weight: 500;
+            cursor: help;
+        }
+        .xai-safe {
+            border-bottom: 2px solid var(--color-success);
+            border-radius: 3px;
+            padding: 1px 3px;
+            font-weight: 500;
+            cursor: help;
+        }
+        .xai-table {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+        .xai-bar {
+            height: 8px;
+            border-radius: 4px;
+        }
+        .xai-bar-phish {
+            background: var(--color-danger);
+        }
+        .xai-bar-safe {
+            background: var(--color-success);
+        }
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+        .matrix-cell {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .matrix-tp { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); }
+        .matrix-tn { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); }
+        .matrix-fp { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); }
+        .matrix-fn { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); }
+        
+        .matrix-label {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+        }
+        .matrix-val {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+        .select-glow {
+            background-color: rgba(15, 23, 42, 0.7) !important;
+            border: 1px solid var(--color-border) !important;
+            color: var(--color-text) !important;
+            border-radius: 10px !important;
+        }
+        .select-glow:focus {
+            border-color: var(--color-primary) !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        }
+    </style>
+  </head>
+  <body>
+    <!-- Animated Cybersecurity Background -->
+    <canvas id="cyberBackground"></canvas>
+    
+    <!-- Header -->
+    <header class="cyber-header">
+      <div class="container py-4">
+        <div class="text-center">
+          <div class="shield-icon-container mb-2">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+          <h1 class="display-5 fw-700 mb-1">Explainable AI Phishing Detection</h1>
+          <p class="subtitle">Real-time Machine Learning Classification, Explainable AI (XAI) Weights, & Headers Audits</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Statistics Dashboard -->
+    <section class="stats-section py-4">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-3">
+            <div class="stat-card glassmorphic">
+              <div class="stat-icon"><i class="bi bi-envelope"></i></div>
+              <div class="stat-content">
+                <h6>Total Emails Checked</h6>
+                <p class="stat-value" id="totalEmailsDisplay">{{ total_checked | default(0) }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="stat-card glassmorphic danger">
+              <div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+              <div class="stat-content">
+                <h6>Phishing Identified</h6>
+                <p class="stat-value" id="phishingCountDisplay">{{ phishing_count | default(0) }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="stat-card glassmorphic success">
+              <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+              <div class="stat-content">
+                <h6>Safe Classified</h6>
+                <p class="stat-value" id="safeCountDisplay">{{ safe_count | default(0) }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="stat-card glassmorphic info" onclick="scrollToMetrics()" style="cursor: pointer;">
+              <div class="stat-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
+              <div class="stat-content">
+                <h6>Compare Models</h6>
+                <p class="stat-value" style="font-size: 1.2rem; margin-top: 5px; color: var(--color-primary-light);">View Analytics <i class="bi bi-arrow-right-short"></i></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container py-5 flex-fill">
+      <div class="row justify-content-center">
+        <div class="col-lg-9">
+          <!-- Input Card -->
+          <div class="main-card glassmorphic">
+            <form id="emailForm">
+              <div class="row mb-3 align-items-center g-3">
+                <div class="col-md-6">
+                  <label for="modelSelect" class="form-label fw-600"><i class="bi bi-cpu"></i> Classification Model</label>
+                  <select class="form-select select-glow select-input" id="modelSelect" name="model">
+                    <option value="nb" selected>Naive Bayes (Probabilistic)</option>
+                    <option value="lr">Logistic Regression (Linear/Coefficients)</option>
+                    <option value="rf">Random Forest (Ensemble Trees)</option>
+                  </select>
+                </div>
+                <div class="col-md-6 text-md-end pt-md-4">
+                  <span class="text-muted small">Select a classifier to test prediction confidence & word weight variations.</span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="emailText" class="form-label fw-600">Email Header & Content</label>
+                <textarea class="form-control input-glow" id="emailText" name="email_text" rows="11" placeholder="Paste full email text here...
+Example layout to test spoof analysis:
+From: security@paypa1-update.com
+Attachment: invoice.exe
+Subject: Confirm payment immediately
+
+Paste suspicious email content here..."></textarea>
+              </div>
+              <div class="d-grid mt-3">
+                <button type="submit" class="btn btn-analyze btn-lg fw-600">
+                  <i class="bi bi-cpu-fill"></i> Perform Threat & XAI Analysis
+                </button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- Results Section (populated dynamically by JavaScript) -->
+    <section class="container py-4">
+      <div class="row justify-content-center">
+        <div class="col-lg-9">
+          <div class="results-section" id="results-section"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Model Comparison Metrics Dashboard -->
+    <section class="container py-5" id="metrics-dashboard-section">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="history-card glassmorphic p-4">
+            <h5 class="history-title mb-4"><i class="bi bi-bar-chart-steps"></i> Active ML Classifiers Performance</h5>
+            <div class="row g-4">
+              <!-- Metrics comparisons -->
+              <div class="col-md-6">
+                <h6 class="mb-3 uppercase fw-600" style="color: var(--color-primary-light); font-size: 0.85rem; letter-spacing: 0.05em;">Model Accuracy & F1-Score Comparisons</h6>
+                <div class="mb-4">
+                  <div class="d-flex justify-content-between mb-1 small">
+                    <span>Naive Bayes</span> <strong id="metrics-nb-score">Loading...</strong>
+                  </div>
+                  <div class="progress" style="height: 10px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-primary" id="metrics-nb-bar" role="progressbar" style="width: 0%;"></div>
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <div class="d-flex justify-content-between mb-1 small">
+                    <span>Logistic Regression</span> <strong id="metrics-lr-score">Loading...</strong>
+                  </div>
+                  <div class="progress" style="height: 10px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar" id="metrics-lr-bar" role="progressbar" style="width: 0%; background-color: var(--accent) !important;"></div>
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <div class="d-flex justify-content-between mb-1 small">
+                    <span>Random Forest</span> <strong id="metrics-rf-score">Loading...</strong>
+                  </div>
+                  <div class="progress" style="height: 10px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-success" id="metrics-rf-bar" role="progressbar" style="width: 0%;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Confusion Matrix visualization -->
+              <div class="col-md-6 border-start border-secondary">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6 class="uppercase fw-600 m-0" style="color: var(--color-primary-light); font-size: 0.85rem; letter-spacing: 0.05em;">Confusion Matrix</h6>
+                  <select class="select-input select-glow py-1" id="matrixModelSelect" onchange="renderSelectedConfusionMatrix()" style="font-size: 0.8rem;">
+                    <option value="nb">Naive Bayes</option>
+                    <option value="lr">Logistic Regression</option>
+                    <option value="rf">Random Forest</option>
+                  </select>
+                </div>
+
+                <div class="matrix-grid">
+                  <div class="matrix-cell matrix-tp">
+                    <div class="matrix-label">True Legitimate</div>
+                    <div class="matrix-val" id="mat-tp">-</div>
+                  </div>
+                  <div class="matrix-cell matrix-fp">
+                    <div class="matrix-label">False Phish (FP)</div>
+                    <div class="matrix-val" id="mat-fp">-</div>
+                  </div>
+                  <div class="matrix-cell matrix-fn">
+                    <div class="matrix-label">False Safe (FN)</div>
+                    <div class="matrix-val" id="mat-fn">-</div>
+                  </div>
+                  <div class="matrix-cell matrix-tn">
+                    <div class="matrix-label">True Phish</div>
+                    <div class="matrix-val" id="mat-tn">-</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prediction History Section -->
+    <section class="history-section py-4">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="history-card glassmorphic">
+              <h5 class="history-title"><i class="bi bi-clock-history"></i> Live Threat Intelligence Log</h5>
+              <div class="table-responsive">
+                <table class="table table-dark table-hover history-table" id="historyTable">
+                  <thead>
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>Sender Address</th>
+                      <th>Classifier</th>
+                      <th>Classification</th>
+                      <th>Risk Score</th>
+                      <th>Confidence</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyTableBody">
+                    <tr>
+                      <td colspan="6" class="text-center text-muted">No audit logs found.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="cyber-footer py-4 mt-5">
+      <div class="container text-center">
+        <p class="footer-text">
+          Developed for<br>
+          <strong>Cyber Threats and Forensics Technology Project - XAI Upgrade</strong>
+        </p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // ========================================================================
+      // ANIMATED CYBERSECURITY BACKGROUND
+      // ========================================================================
+      
+      const canvas = document.getElementById('cyberBackground');
+      const ctx = canvas.getContext('2d');
+      
+      let animationId;
+      let particles = [];
+      let lines = [];
+      let binaryNumbers = [];
+      
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      
+      class Particle {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.radius = Math.random() * 2 + 1;
+          this.vx = (Math.random() - 0.5) * 0.5;
+          this.vy = (Math.random() - 0.5) * 0.5;
+          this.opacity = Math.random() * 0.4 + 0.2;
+          this.glowIntensity = Math.random() * 0.5 + 0.5;
+        }
+        
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          
+          if (this.x < 0) this.x = canvas.width;
+          if (this.x > canvas.width) this.x = 0;
+          if (this.y < 0) this.y = canvas.height;
+          if (this.y > canvas.height) this.y = 0;
+          
+          this.glowIntensity += (Math.random() - 0.5) * 0.1;
+          this.glowIntensity = Math.max(0.3, Math.min(1, this.glowIntensity));
+        }
+        
+        draw() {
+          const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius * 3);
+          gradient.addColorStop(0, `rgba(99, 102, 241, ${this.opacity * this.glowIntensity})`);
+          gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+          
+          ctx.fillStyle = gradient;
+          ctx.fillRect(this.x - this.radius * 3, this.y - this.radius * 3, this.radius * 6, this.radius * 6);
+          
+          ctx.fillStyle = `rgba(129, 140, 248, ${this.opacity})`;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      
+      class BinaryNumber {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.vy = Math.random() * 0.3 + 0.2;
+          this.value = Math.random() > 0.5 ? '1' : '0';
+          this.opacity = Math.random() * 0.3 + 0.1;
+          this.duration = Math.random() * 5000 + 8000;
+          this.startTime = Date.now();
+        }
+        
+        update() {
+          this.y -= this.vy;
+          const elapsed = Date.now() - this.startTime;
+          this.opacity = Math.max(0, 0.3 - (elapsed / this.duration) * 0.3);
+          return this.opacity > 0;
+        }
+        
+        draw() {
+          ctx.font = 'bold 15px Courier New';
+          ctx.fillStyle = `rgba(99, 102, 241, ${this.opacity})`;
+          ctx.textAlign = 'center';
+          ctx.fillText(this.value, this.x, this.y);
+        }
+      }
+      
+      class Line {
+        constructor(x1, y1, x2, y2) {
+          this.x1 = x1;
+          this.y1 = y1;
+          this.x2 = x2;
+          this.y2 = y2;
+          this.opacity = 0.15;
+          this.targetOpacity = Math.random() * 0.2 + 0.05;
+          this.opacityDirection = Math.random() > 0.5 ? 1 : -1;
+        }
+        
+        update() {
+          this.opacity += this.opacityDirection * 0.01;
+          if (this.opacity > this.targetOpacity + 0.05) this.opacityDirection = -1;
+          else if (this.opacity < this.targetOpacity - 0.05) this.opacityDirection = 1;
+        }
+        
+        draw() {
+          ctx.strokeStyle = `rgba(99, 102, 241, ${this.opacity})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(this.x1, this.y1);
+          ctx.lineTo(this.x2, this.y2);
+          ctx.stroke();
+        }
+      }
+      
+      function initializeBackground() {
+        particles = [];
+        lines = [];
+        for (let i = 0; i < 22; i++) {
+          particles.push(new Particle());
+        }
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < 220) {
+              lines.push(new Line(particles[i].x, particles[i].y, particles[j].x, particles[j].y));
+            }
+          }
+        }
+      }
+      
+      function emitBinaryNumbers() {
+        if (Math.random() > 0.96) {
+          binaryNumbers.push(new BinaryNumber());
+        }
+      }
+      
+      function animate() {
+        ctx.fillStyle = 'rgba(8, 12, 20, 0.06)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(p => { p.update(); p.draw(); });
+        lines.forEach((l, index) => {
+          if (index < particles.length - 1) {
+            l.x1 = particles[index].x;
+            l.y1 = particles[index].y;
+            l.x2 = particles[index + 1].x;
+            l.y2 = particles[index + 1].y;
+          }
+          l.update();
+          l.draw();
+        });
+        binaryNumbers = binaryNumbers.filter(bn => bn.update());
+        binaryNumbers.forEach(bn => bn.draw());
+        emitBinaryNumbers();
+        
+        animationId = requestAnimationFrame(animate);
+      }
+      
+      initializeBackground();
+      animate();
+
+      // ========================================================================
+      // ANALYTICS & API INTEGRATION
+      // ========================================================================
+      let metricsData = null;
+
+      function scrollToMetrics() {
+        document.getElementById('metrics-dashboard-section').scrollIntoView({ behavior: 'smooth' });
+      }
+
+      async function loadModelMetrics() {
+        try {
+          const response = await fetch('/metrics');
+          const data = await response.json();
+          metricsData = data.metrics;
+
+          // Render metrics comparison
+          const modelsList = ['nb', 'lr', 'rf'];
+          const namesMap = { 'nb': 'Naive Bayes', 'lr': 'Logistic Regression', 'rf': 'Random Forest' };
+          
+          modelsList.forEach(m => {
+             const metric = metricsData[m];
+             if (metric) {
+                 const scorePct = (metric.accuracy * 100).toFixed(1);
+                 document.getElementById(`metrics-${m}-score`).textContent = `${scorePct}% Accuracy`;
+                 document.getElementById(`metrics-${m}-bar`).style.width = `${scorePct}%`;
+             }
+          });
+
+          renderSelectedConfusionMatrix();
+        } catch (err) {
+          console.error("Failed to load classifier metrics:", err);
+        }
+      }
+
+      function renderSelectedConfusionMatrix() {
+        if (!metricsData) return;
+        const selectedModel = document.getElementById('matrixModelSelect').value;
+        const matrix = metricsData[selectedModel]?.confusion_matrix;
+
+        if (matrix && matrix.length === 2) {
+            // matrix structure: [[TN, FP], [FN, TP]]
+            const tn = matrix[0][0]; // true legitimate
+            const fp = matrix[0][1]; // false phishing
+            const fn = matrix[1][0]; // false legitimate
+            const tp = matrix[1][1]; // true phishing
+            
+            document.getElementById('mat-tp').textContent = tn;
+            document.getElementById('mat-fp').textContent = fp;
+            document.getElementById('mat-fn').textContent = fn;
+            document.getElementById('mat-tn').textContent = tp;
+        }
+      }
+
+      // Handle form submission via AJAX
+      document.getElementById('emailForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const emailText = document.getElementById('emailText').value;
+        const modelUsed = document.getElementById('modelSelect').value;
+        const button = this.querySelector('button');
+        const originalText = button.innerHTML;
+        
+        button.disabled = true;
+        button.innerHTML = '<i class="bi bi-hourglass-split"></i> Running Classifier Audits...';
+
+        try {
+          const response = await fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email_text: emailText, model: modelUsed })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            // Update stats counter displays
+            document.getElementById('totalEmailsDisplay').textContent = data.total_checked;
+            document.getElementById('phishingCountDisplay').textContent = data.phishing_count;
+            document.getElementById('safeCountDisplay').textContent = data.safe_count;
+
+            // Render detailed XAI highlighting and audit tables
+            updateResults(emailText, data);
+
+            // Scroll to results
+            setTimeout(() => {
+              document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          } else {
+            alert('Error: ' + data.error);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('An error occurred during classification.');
+        } finally {
+          button.disabled = false;
+          button.innerHTML = originalText;
+        }
+      });
+
+      // Update results UI with XAI highlights and risk metadata
+      function updateResults(rawText, data) {
+        const resultsContainer = document.getElementById('results-section');
+        const isPhish = data.prediction === 'Phishing';
+        
+        const cardTitle = isPhish ? 'Threat Alert: Phishing Pattern Identified' : 'Security Log: Content Evaluated Safe';
+        const cardIcon = isPhish ? '<i class="bi bi-shield-slash-fill"></i>' : '<i class="bi bi-shield-check-fill"></i>';
+        const cardClass = isPhish ? 'danger-card' : 'success-card';
+        const iconClass = isPhish ? 'danger-icon' : 'success-icon';
+
+        // 1. Build XAI Highlight Text
+        // Escape raw text first
+        let highlighted = rawText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        
+        // Extract word weights
+        const weights = data.xai_weights || [];
+        
+        // Highlight each word based on predictive weights
+        weights.forEach(w => {
+            const word = w.word;
+            const weight = w.weight;
+            if (word.length < 2) return;
+            
+            try {
+                // Compile case-insensitive search pattern bound to word edges
+                const regex = new RegExp(`\\b(${word})\\b`, 'gi');
+                
+                let highlightClass = 'xai-safe';
+                let opacity = Math.min(Math.abs(weight) * 2.0 + 0.1, 0.6); // Scale opacity to highlight strength
+                let bgStyle = `background: rgba(16, 185, 129, ${opacity});`;
+                
+                if (weight > 0) {
+                    highlightClass = 'xai-phish';
+                    bgStyle = `background: rgba(239, 68, 68, ${opacity});`;
+                }
+                
+                highlighted = highlighted.replace(regex, `<span class="${highlightClass}" style="${bgStyle}" title="Predictive weight: ${weight.toFixed(4)}">$1</span>`);
+            } catch(e) {
+                // Ignore matching boundary errors
+            }
+        });
+
+        // 2. Generate Feature weights table rows
+        let xaiRowsHtml = '';
+        if (weights.length > 0) {
+            // Find max weight for bar scaling
+            const maxWeight = Math.max(...weights.map(w => Math.abs(w.weight)));
+            
+            weights.forEach(w => {
+                const widthPct = maxWeight > 0 ? (Math.abs(w.weight) / maxWeight * 100).toFixed(0) : 0;
+                const isPhishFeature = w.weight > 0;
+                const barClass = isPhishFeature ? 'xai-bar-phish' : 'xai-bar-safe';
+                const typeLabel = isPhishFeature ? 'Phish Indicator' : 'Safe Indicator';
+                const badgeColor = isPhishFeature ? 'text-danger' : 'text-success';
+                
+                xaiRowsHtml += `
+                    <tr>
+                      <td class="font-monospace">${w.word}</td>
+                      <td><span class="${badgeColor} fw-600">${typeLabel}</span></td>
+                      <td style="width: 40%;">
+                        <div class="progress" style="height: 8px; background: rgba(255,255,255,0.03);">
+                          <div class="progress-bar ${barClass}" style="width: ${widthPct}%;"></div>
+                        </div>
+                      </td>
+                      <td class="text-end font-monospace">${w.weight.toFixed(4)}</td>
+                    </tr>
+                `;
+            });
+        } else {
+            xaiRowsHtml = '<tr><td colspan="4" class="text-muted text-center">No words contributed to classifier boundaries.</td></tr>';
+        }
+
+        // 3. Header checks warning blocks
+        const spoofBadge = data.domain_spoof ? 
+          '<div class="alert alert-danger py-2 mb-2 d-flex align-items-center gap-2"><i class="bi bi-shield-fill-x"></i> <strong>SPOOFED SENDER:</strong> Sender domain does not match reputable brand name record!</div>' : 
+          (data.is_verified_brand ? 
+            `<div class="alert alert-success py-2 mb-2 d-flex align-items-center gap-2"><i class="bi bi-patch-check-fill"></i> <strong>VERIFIED BRAND:</strong> Sender domain confirmed as official ${data.sender ? data.sender.split('@')[1]?.replace('>','') || '' : ''} infrastructure (SPF/DKIM aligned).</div>` :
+            '<div class="alert alert-success py-2 mb-2 d-flex align-items-center gap-2"><i class="bi bi-shield-fill-check"></i> Sender reputation matches domain expectations.</div>'
+          );
+
+        const dkimBadge = data.is_dkim_signed ?
+          `<div class="alert alert-success py-2 mb-2 d-flex align-items-center gap-2"><i class="bi bi-key-fill"></i> <strong>DKIM VERIFIED:</strong> Email cryptographically signed by <code>${data.dkim_domain}</code></div>` :
+          (data.dkim_domain ?
+            `<div class="alert alert-warning py-2 mb-2 d-flex align-items-center gap-2"><i class="bi bi-key"></i> DKIM signing domain: <code>${data.dkim_domain}</code> (not in verified brand list)</div>` :
+            '<div class="alert alert-secondary py-2 mb-2 d-flex align-items-center gap-2"><i class="bi bi-key"></i> No DKIM signed-by header found.</div>'
+          );
+          
+        const linkBadge = data.suspicious_url ? 
+          '<div class="alert alert-danger py-2 mb-2 d-flex align-items-center gap-2"><i class="bi bi-link-45deg"></i> <strong>RISKY LINKS:</strong> URLs linked to raw IP address or contain abnormal character lengths!</div>' : 
+          (data.has_url ? '<div class="alert alert-warning py-2 mb-2 d-flex align-items-center gap-2"><i class="bi bi-link"></i> Web link present, verify target domain before clicking.</div>' : '<div class="alert alert-success py-2 mb-2 d-flex align-items-center gap-2"><i class="bi bi-link-45deg"></i> No hyperlinks detected in body.</div>');
+
+        const attachmentColor = data.attachment_risk === 'High Risk' ? 'alert-danger' : (data.attachment_risk === 'Low Risk' ? 'alert-warning' : 'alert-success');
+        const attachmentIcon = data.attachment_risk === 'High Risk' ? '<i class="bi bi-file-earmark-lock2-fill"></i>' : '<i class="bi bi-file-earmark-check-fill"></i>';
+        const attachmentBadge = `
+            <div class="alert ${attachmentColor} py-2 mb-0 d-flex align-items-center gap-2">
+                ${attachmentIcon} 
+                <strong>Attachment:</strong> ${data.attachment} (${data.attachment_risk === 'None' ? 'None' : data.attachment_risk})
+            </div>
+        `;
+
+        const modelUsedLabel = data.model_used === 'nb' ? 'Naive Bayes' : (data.model_used === 'lr' ? 'Logistic Regression' : 'Random Forest');
+
+        resultsContainer.innerHTML = `
+          <div class="results-section mt-5">
+            <!-- Decision Card -->
+            <div class="result-card glassmorphic ${cardClass} mb-4 animate-slide-in">
+              <div class="d-flex align-items-center">
+                <div class="result-icon ${iconClass}">
+                  ${cardIcon}
+                </div>
+                <div class="result-content">
+                  <h5 class="result-title">${cardTitle}</h5>
+                  <p class="confidence-text">Model: <strong>${modelUsedLabel}</strong> | Confidence: <strong>${data.confidence ? (data.confidence * 100).toFixed(2) : 'N/A'}%</strong></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Threat Intel Metadata Parser -->
+            <div class="analysis-card glassmorphic mb-4">
+              <h6 class="card-title mb-3"><i class="bi bi-search"></i> Header & Threat intelligence audits</h6>
+              <div class="mb-3 small">
+                <span class="text-muted">Extracted Sender:</span> <strong class="text-white">${data.sender}</strong>
+              </div>
+              <div class="d-flex flex-column gap-1">
+                ${spoofBadge}
+                ${dkimBadge}
+                ${linkBadge}
+                ${attachmentBadge}
+              </div>
+            </div>
+
+            <!-- Highlighted email -->
+            <div class="analysis-card glassmorphic mb-4">
+              <h6 class="card-title mb-3"><i class="bi bi-lightbulb-fill"></i> Model Word Weights Heat-map</h6>
+              <p class="small text-muted mb-2">Hover over highlighted words to see their exact predictive values (Red pushes towards Phishing, Green towards Safe).</p>
+              <div class="highlighted-email text-white">
+${highlighted}
+              </div>
+            </div>
+
+            <!-- Contribution stats table -->
+            <div class="analysis-card glassmorphic mb-4">
+              <h6 class="card-title mb-3"><i class="bi bi-calculator"></i> Active Classifier Feature Weights</h6>
+              <div class="table-responsive">
+                <table class="table table-dark table-hover xai-table mb-0">
+                  <thead>
+                    <tr>
+                      <th>Contributing Word</th>
+                      <th>Class Influence</th>
+                      <th>Relative Strength</th>
+                      <th class="text-end">Weight</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${xaiRowsHtml}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+
+        loadPredictionHistory();
+      }
+
+      window.addEventListener('load', function() {
+        loadModelMetrics();
+        loadPredictionHistory();
+      });
+
+      // Fetch dynamic audit logs table
+      async function loadPredictionHistory() {
+        try {
+          const response = await fetch('/history');
+          const data = await response.json();
+          displayPredictionHistory(data.predictions);
+        } catch (error) {
+          console.error('Error loading history:', error);
+        }
+      }
+
+      function displayPredictionHistory(predictions) {
+        const tbody = document.getElementById('historyTableBody');
+        
+        if (predictions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No audit logs found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = predictions.map(pred => {
+          const timestamp = new Date(pred.timestamp).toLocaleString();
+          const senderPreview = pred.sender.substring(0, 30).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          const labelBadge = pred.prediction === 'Phishing' 
+            ? `<span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill"></i> Phishing</span>`
+            : `<span class="badge bg-success"><i class="bi bi-shield-check-fill"></i> Safe</span>`;
+          const confidence = pred.confidence ? (pred.confidence * 100).toFixed(1) + '%' : 'N/A';
+          const modelUsedLabel = pred.model_used === 'nb' ? 'Naive Bayes' : (pred.model_used === 'lr' ? 'LogReg' : 'Random Forest');
+          const riskColor = pred.risk_score <= 30 ? 'text-success' : (pred.risk_score <= 70 ? 'text-warning' : 'text-danger');
+
+          return `
+            <tr>
+              <td class="text-muted small">${timestamp}</td>
+              <td class="text-truncate" title="${pred.sender}">${senderPreview}</td>
+              <td class="small text-muted font-monospace">${modelUsedLabel}</td>
+              <td>${labelBadge}</td>
+              <td class="${riskColor} font-monospace fw-600">${pred.risk_score}%</td>
+              <td>${confidence}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Reload logs on predictions
+      document.getElementById('emailForm').addEventListener('submit', function(e) {
+        setTimeout(() => {
+          loadPredictionHistory();
+        }, 600);
+      });
+    </script>
+  </body>
+</html>

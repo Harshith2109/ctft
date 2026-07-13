@@ -1,0 +1,4 @@
+﻿venv/
+__pycache__/
+predictions.db
+*.pyc

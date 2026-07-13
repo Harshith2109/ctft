@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishGuard Audit Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="pop-header">
+    <div class="logo-area">
+      <span class="logo-shield">🛡️</span>
+      <div>
+        <h1>PhishGuard AI</h1>
+        <p class="subtitle">Explainable Phishing Scanner</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="pop-content">
+    <!-- Server connection state -->
+    <div class="status-card" id="connectionStatus">
+      <span class="status-dot pinging"></span>
+      <span class="status-text">Checking local service connection...</span>
+    </div>
+
+    <!-- Configuration card -->
+    <div class="card">
+      <label for="extModelSelect" class="section-label">Active ML Classifier</label>
+      <select id="extModelSelect" class="ext-select">
+        <option value="nb">Naive Bayes (Probabilistic)</option>
+        <option value="lr">Logistic Regression (Coefficients)</option>
+        <option value="rf">Random Forest (Ensemble Trees)</option>
+      </select>
+    </div>
+
+    <!-- Manual input analyzer -->
+    <div class="card">
+      <label class="section-label">Manual Content Check</label>
+      <textarea id="manualText" class="ext-textarea" placeholder="Paste any suspicious text or email body here..."></textarea>
+      <button id="btnAnalyze" class="ext-btn">Analyze Text</button>
+    </div>
+
+    <!-- Dynamic results block -->
+    <div id="resultsBlock" class="card result-card hidden">
+      <div class="result-header">
+        <span id="resIcon" class="res-icon">🟢</span>
+        <div>
+          <h2 id="resTitle" class="res-title">Safe</h2>
+          <p id="resSub" class="res-sub">Confidence: 98%</p>
+        </div>
+      </div>
+      
+      <div class="results-stats">
+        <div class="stat-item">
+          <span class="stat-lbl">Risk Score:</span>
+          <span id="resScore" class="stat-val">12%</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-lbl">Action:</span>
+          <span id="resAction" class="stat-val">None</span>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
