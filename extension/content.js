@@ -85,8 +85,12 @@ function init() {
   if (observer) observer.disconnect();
   
   // Scans DOM alterations to catch loaded emails
-  observer = new MutationObserver(debounce(checkForEmails, 1000));
+  observer = new MutationObserver(debounce(checkForEmails, 150));
   observer.observe(document.body, { childList: true, subtree: true });
+  
+  // Fallback periodic poll to prevent starvation by active background mutations
+  setInterval(checkForEmails, 1500);
+  
   checkForEmails();
 }
 
