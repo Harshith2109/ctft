@@ -396,11 +396,11 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
   
   const linkBadge = result.suspicious_url 
     ? '<span class="pg-badge danger">❌ Dangerous Links</span>' 
-    : (result.has_url ? '<span class="pg-badge warning">Links Present</span>' : '<span class="pg-badge success">No Links</span>');
+    : (result.has_url ? '<span class="pg-badge success">✅ Links Checked & Safe</span>' : '<span class="pg-badge success">No Links</span>');
   
   const attachmentBadge = result.attachment_risk === "High Risk" 
     ? '<span class="pg-badge danger">⚠ Dangerous Attachment</span>' 
-    : (result.attachment_risk === "Low Risk" ? '<span class="pg-badge warning">Attachment Attached</span>' : '<span class="pg-badge success">No Attachments</span>');
+    : (result.attachment_risk === "Low Risk" ? '<span class="pg-badge success">📎 Attachment Checked Safe</span>' : '<span class="pg-badge success">No Attachments</span>');
 
   // Build Anomaly List
   const anomalies = [];
