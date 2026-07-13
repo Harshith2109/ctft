@@ -241,8 +241,17 @@ async function runGmailAudit(msgNode, badge) {
     const bodyText = bodyNode ? bodyNode.innerText : "";
     
     // 4. Scrape Attachments
-    const attachmentNodes = msgNode.querySelectorAll(".a5a, .att");
-    const attachment = attachmentNodes.length > 0 ? attachmentNodes[0].innerText : "None";
+    const attachmentNodes = msgNode.querySelectorAll(".aKz, .a5i, .a5a, .att, span.a1a, [role='listitem'] [class*='filename']");
+    let attachment = "None";
+    if (attachmentNodes.length > 0) {
+      const names = Array.from(attachmentNodes)
+        .map(n => n.innerText || n.textContent)
+        .map(t => t.trim())
+        .filter(t => t && t.includes("."));
+      if (names.length > 0) {
+        attachment = names[0];
+      }
+    }
     
     // Assemble text payload
     const textToAnalyze = `From: ${sender}\nSubject: ${subject}\nAttachment: ${attachment}\n\n${bodyText}`;
@@ -274,8 +283,17 @@ async function runOutlookAudit(paneNode, badge) {
     const bodyText = bodyNode ? bodyNode.innerText : "";
     
     // 4. Scrape Attachments
-    const attachmentNodes = paneNode.querySelectorAll("[data-log-name='Attachment']");
-    const attachment = attachmentNodes.length > 0 ? attachmentNodes[0].innerText : "None";
+    const attachmentNodes = paneNode.querySelectorAll("[data-log-name='Attachment'], [role='listitem'] [class*='filename'], .AttachmentCard, .att");
+    let attachment = "None";
+    if (attachmentNodes.length > 0) {
+      const names = Array.from(attachmentNodes)
+        .map(n => n.innerText || n.textContent)
+        .map(t => t.trim())
+        .filter(t => t && t.includes("."));
+      if (names.length > 0) {
+        attachment = names[0];
+      }
+    }
     
     // Assemble text payload
     const textToAnalyze = `From: ${sender}\nSubject: ${subject}\nAttachment: ${attachment}\n\n${bodyText}`;
