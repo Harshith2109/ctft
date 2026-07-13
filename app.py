@@ -186,14 +186,12 @@ def parse_email_metadata(text):
     is_verified_brand = False
     if email:
         domain = email.split('@')[1].lower()
-        brands = ['paypal', 'netflix', 'google', 'gmail', 'microsoft', 'outlook', 'apple', 'amazon', 'facebook']
+        brands = ['paypal', 'netflix', 'google', 'microsoft', 'apple', 'amazon', 'facebook']
         official_domains = {
             'paypal': ['paypal.com', 'paypal.co.uk'],
             'netflix': ['netflix.com'],
             'google': ['google.com'],
-            'gmail': ['gmail.com'],
             'microsoft': ['microsoft.com', 'microsoftonline.com'],
-            'outlook': ['outlook.com', 'hotmail.com'],
             'apple': ['apple.com', 'icloud.com'],
             'amazon': ['amazon.com', 'amazon.in'],
             'facebook': ['facebook.com']
