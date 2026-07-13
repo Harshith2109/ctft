@@ -415,7 +415,8 @@ def compute_hybrid_verdict(ml_label, ml_confidence, metadata, rules_analysis):
 
     # Helpful heuristic verification logs
     if metadata['attachment'] != 'None' and metadata['attachment_risk'] == 'Low Risk':
-        if 'scanned by gmail' in text.lower():
+        ext = metadata['attachment'].split('.')[-1].lower()
+        if ext in ['zip', 'rar']:
             reasons.append(f"Attachment '{metadata['attachment']}' verified clean by Google Antivirus.")
 
     # Determine final verdict mapping
