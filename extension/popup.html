@@ -43,6 +43,18 @@
       <button id="btnAnalyze" class="ext-btn">Analyze Text</button>
     </div>
 
+    <!-- Local Whitelist Management -->
+    <div class="card">
+      <label class="section-label">Safe-Domain Whitelist</label>
+      <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+        <input type="text" id="whitelistInput" style="flex: 1; padding: 6px 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--color-border); border-radius: 6px; color: var(--color-text); font-size: 11px; outline: none; transition: border-color 0.2s;" placeholder="e.g. partnerdomain.com">
+        <button id="btnAddWhitelist" style="padding: 6px 12px; background: var(--color-primary); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; font-size: 11px; transition: background 0.2s;">+</button>
+      </div>
+      <ul id="whitelistList" style="list-style: none; margin: 0; padding: 0; max-height: 80px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+        <!-- Whitelisted domains dynamically loaded here -->
+      </ul>
+    </div>
+
     <!-- Dynamic results block -->
     <div id="resultsBlock" class="card result-card hidden">
       <div class="result-header">

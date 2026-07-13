@@ -252,3 +252,28 @@ h1 {
 .hidden {
   display: none !important;
 }
+
+.whitelist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.4);
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  font-size: 11px;
+}
+
+.whitelist-del-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-danger);
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 12px;
+}
+
+.whitelist-del-btn:hover {
+  color: #ff6b6b;
+}

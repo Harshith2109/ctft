@@ -1,5 +1,5 @@
 // PhishGuard Extension Popup Controller
-// Binds UI controls, pings the backend, and handles manual text checks.
+// Binds UI controls, pings the backend, handles manual text checks, and manages whitelisted domains.
 
 const FLASK_SERVER = "https://phishguard-api-fzds.onrender.com";
 
@@ -9,6 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnAnalyze = document.getElementById("btnAnalyze");
   const connectionStatus = document.getElementById("connectionStatus");
   const resultsBlock = document.getElementById("resultsBlock");
+  
+  const whitelistInput = document.getElementById("whitelistInput");
+  const btnAddWhitelist = document.getElementById("btnAddWhitelist");
+  const whitelistList = document.getElementById("whitelistList");
 
   const resIcon = document.getElementById("resIcon");
   const resTitle = document.getElementById("resTitle");
@@ -30,7 +34,32 @@ document.addEventListener("DOMContentLoaded", () => {
     chrome.storage.local.set({ selectedModel: selected });
   });
 
-  // 4. Handle manual text check
+  // 4. Load and render local whitelisted domains
+  loadAndRenderWhitelist();
+
+  // 5. Add custom domain to whitelist
+  btnAddWhitelist.addEventListener("click", () => {
+    const domain = whitelistInput.value.trim().toLowerCase();
+    if (!domain) return;
+    if (!domain.includes(".") || domain.length < 4) {
+      alert("Please enter a valid domain format (e.g. trusted.com).");
+      return;
+    }
+    chrome.storage.local.get({ whitelistedDomains: [] }, (settings) => {
+      const currentList = settings.whitelistedDomains;
+      if (!currentList.includes(domain)) {
+        currentList.push(domain);
+        chrome.storage.local.set({ whitelistedDomains: currentList }, () => {
+          whitelistInput.value = "";
+          loadAndRenderWhitelist();
+        });
+      } else {
+        alert("Domain is already whitelisted.");
+      }
+    });
+  });
+
+  // 6. Handle manual text check
   btnAnalyze.addEventListener("click", async () => {
     const text = manualText.value.trim();
     if (!text) {
@@ -85,6 +114,39 @@ document.addEventListener("DOMContentLoaded", () => {
       dot.className = "status-dot disconnected";
       label.textContent = "Disconnected (Start app.py)";
     }
+  }
+
+  // Loads storage domains and updates the popup whitelist container
+  function loadAndRenderWhitelist() {
+    chrome.storage.local.get({ whitelistedDomains: [] }, (settings) => {
+      whitelistList.innerHTML = "";
+      if (settings.whitelistedDomains.length === 0) {
+        whitelistList.innerHTML = `<li style="color:#64748b; font-size:10px; text-align:center; padding: 4px 0;">No whitelisted domains.</li>`;
+        return;
+      }
+      settings.whitelistedDomains.forEach(domain => {
+        const li = document.createElement("li");
+        li.className = "whitelist-item";
+        li.innerHTML = `
+          <span>${domain}</span>
+          <button class="whitelist-del-btn" data-domain="${domain}">&times;</button>
+        `;
+        whitelistList.appendChild(li);
+      });
+
+      // Bind delete button events
+      whitelistList.querySelectorAll(".whitelist-del-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const domToRemove = btn.getAttribute("data-domain");
+          chrome.storage.local.get({ whitelistedDomains: [] }, (s) => {
+            const updated = s.whitelistedDomains.filter(d => d !== domToRemove);
+            chrome.storage.local.set({ whitelistedDomains: updated }, () => {
+              loadAndRenderWhitelist();
+            });
+          });
+        });
+      });
+    });
   }
 
   // Renders the prediction payload onto the results UI card
