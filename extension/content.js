@@ -15,13 +15,13 @@ const STYLES = `
     gap: 6px !important;
     padding: 4px 12px !important;
     border-radius: 20px !important;
-    font-family: 'Poppins', sans-serif !important;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
     font-size: 11px !important;
     font-weight: 600 !important;
     color: #ffffff !important;
     border: none !important;
     cursor: pointer !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
     transition: all 0.2s ease-in-out !important;
     margin: 4px 10px !important;
     text-transform: uppercase !important;
@@ -37,36 +37,36 @@ const STYLES = `
     cursor: wait !important;
   }
   .pg-mini-badge.safe {
-    background: rgba(16, 185, 129, 0.2) !important;
-    color: #34d399 !important;
-    border: 1px solid rgba(16, 185, 129, 0.5) !important;
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: #10b981 !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
   }
   .pg-mini-badge.safe:hover {
-    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3) !important;
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.2) !important;
   }
   .pg-mini-badge.phish {
-    background: rgba(239, 68, 68, 0.2) !important;
-    color: #f87171 !important;
-    border: 1px solid rgba(239, 68, 68, 0.5) !important;
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
   }
   .pg-mini-badge.phish:hover {
-    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3) !important;
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2) !important;
   }
   .pg-mini-badge.suspicious {
-    background: rgba(245, 158, 11, 0.2) !important;
-    color: #fbbf24 !important;
-    border: 1px solid rgba(245, 158, 11, 0.5) !important;
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: #f59e0b !important;
+    border: 1px solid rgba(245, 158, 11, 0.3) !important;
   }
   .pg-mini-badge.suspicious:hover {
-    box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3) !important;
+    box-shadow: 0 4px 8px rgba(245, 158, 11, 0.2) !important;
   }
   .pg-mini-badge.whitelisted {
-    background: rgba(59, 130, 246, 0.2) !important;
-    color: #60a5fa !important;
-    border: 1px solid rgba(59, 130, 246, 0.5) !important;
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #3b82f6 !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
   }
   .pg-mini-badge.whitelisted:hover {
-    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3) !important;
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2) !important;
   }
 
   @keyframes pgPulse {
@@ -75,52 +75,83 @@ const STYLES = `
   }
 
   .phishguard-alert-banner {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-    background: rgba(30, 41, 59, 0.98) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    border-radius: 12px !important;
-    padding: 18px !important;
-    margin: 12px 0 !important;
-    color: #f1f5f9 !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3) !important;
-    backdrop-filter: blur(8px) !important;
+    --pg-bg: rgba(255, 255, 255, 0.96);
+    --pg-text: #1e293b;
+    --pg-text-muted: #64748b;
+    --pg-border: rgba(0, 0, 0, 0.08);
+    --pg-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+    --pg-btn-bg: rgba(0, 0, 0, 0.03);
+    --pg-btn-hover: rgba(0, 0, 0, 0.07);
+    --pg-btn-text: #334155;
+    
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    background: var(--pg-bg) !important;
+    border: 1px solid var(--pg-border) !important;
+    border-radius: 8px !important;
+    padding: 12px 16px !important;
+    margin: 8px 0 !important;
+    color: var(--pg-text) !important;
+    box-shadow: var(--pg-shadow) !important;
+    backdrop-filter: blur(12px) !important;
     display: none; /* Hidden by default, toggled via mini-badge click */
     animation: pgFadeIn 0.2s ease-out !important;
   }
+
+  .phishguard-alert-banner.dark-theme {
+    --pg-bg: rgba(30, 41, 59, 0.96);
+    --pg-text: #f1f5f9;
+    --pg-text-muted: #94a3b8;
+    --pg-border: rgba(255, 255, 255, 0.08);
+    --pg-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    --pg-btn-bg: rgba(255, 255, 255, 0.06);
+    --pg-btn-hover: rgba(255, 255, 255, 0.12);
+    --pg-btn-text: #cbd5e1;
+  }
+
   @keyframes pgFadeIn {
     from { opacity: 0; transform: translateY(-8px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .phishguard-alert-banner.phish {
-    border-left: 6px solid #ef4444 !important;
-  }
-  .phishguard-alert-banner.safe {
-    border-left: 6px solid #10b981 !important;
-  }
-  .phishguard-alert-banner.whitelisted {
-    border-left: 6px solid #3b82f6 !important;
-  }
-  .phishguard-alert-banner.suspicious {
-    border-left: 6px solid #f59e0b !important;
-  }
+
+  .phishguard-alert-banner.phish { border-left: 5px solid #ef4444 !important; }
+  .phishguard-alert-banner.safe { border-left: 5px solid #10b981 !important; }
+  .phishguard-alert-banner.whitelisted { border-left: 5px solid #3b82f6 !important; }
+  .phishguard-alert-banner.suspicious { border-left: 5px solid #f59e0b !important; }
   
   .pg-badge-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 6px;
+    margin-top: 8px;
   }
   .pg-badge {
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: bold;
-    text-transform: uppercase;
+    padding: 3px 8px !important;
+    border-radius: 12px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.2px !important;
   }
-  .pg-badge.danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
-  .pg-badge.success { background: rgba(16, 185, 129, 0.2); color: #a7f3d0; border: 1px solid rgba(16, 185, 129, 0.3); }
-  .pg-badge.warning { background: rgba(245, 158, 11, 0.2); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.3); }
-  .pg-badge.secondary { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); }
+  .pg-badge.danger {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.2) !important;
+  }
+  .pg-badge.success {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+    border: 1px solid rgba(16, 185, 129, 0.2) !important;
+  }
+  .pg-badge.warning {
+    background: rgba(245, 158, 11, 0.1) !important;
+    color: #f59e0b !important;
+    border: 1px solid rgba(245, 158, 11, 0.2) !important;
+  }
+  .pg-badge.secondary {
+    background: rgba(148, 163, 184, 0.1) !important;
+    color: var(--pg-text-muted) !important;
+    border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  }
   
   .xai-ext-phish {
     border-bottom: 2px solid #ef4444 !important;
@@ -416,10 +447,6 @@ function requestPrediction(emailText) {
           }
         }
       );
-    });
-  });
-}
-
 // Renders glassmorphism status alerts at the top of the email
 function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
   const isWhitelisted = result.model_used === "local-whitelist";
@@ -453,6 +480,11 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
   else if (isSuspicious) bannerClass = "suspicious";
   
   banner.className = `phishguard-alert-banner ${bannerClass}`;
+
+  // Dynamically match site background brightness
+  if (isDarkTheme(parentNode)) {
+    banner.classList.add("dark-theme");
+  }
   
   // Format badges
   const spoofBadge = result.domain_spoof 
@@ -461,15 +493,15 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
   
   const dkimBadge = result.is_dkim_signed 
     ? '<span class="pg-badge success">🔑 DKIM verified</span>' 
-    : (result.dkim_domain ? '<span class="pg-badge warning">🔑 DKIM Domain Unrecognized</span>' : '<span class="pg-badge secondary">No DKIM</span>');
+    : (result.dkim_domain ? '<span class="pg-badge warning">🔑 DKIM Unrecognized</span>' : '<span class="pg-badge secondary">No DKIM</span>');
   
   const linkBadge = result.suspicious_url 
     ? '<span class="pg-badge danger">❌ Dangerous Links</span>' 
-    : (result.has_url ? '<span class="pg-badge success">✅ Links Checked & Safe</span>' : '<span class="pg-badge success">No Links</span>');
+    : (result.has_url ? '<span class="pg-badge success">✅ Links Checked</span>' : '<span class="pg-badge success">No Links</span>');
   
   const attachmentBadge = result.attachment_risk === "High Risk" 
-    ? '<span class="pg-badge danger">⚠ Dangerous Attachment</span>' 
-    : (result.attachment_risk === "Low Risk" ? '<span class="pg-badge success">📎 Attachment Checked Safe</span>' : '<span class="pg-badge success">No Attachments</span>');
+    ? '<span class="pg-badge danger">⚠ Dangerous File</span>' 
+    : (result.attachment_risk === "Low Risk" ? '<span class="pg-badge success">📎 File Checked Safe</span>' : '<span class="pg-badge success">No Attachments</span>');
 
   // Build Anomaly List
   const anomalies = [];
@@ -487,7 +519,7 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
       anomalies.push(`DKIM signature is present but signed by an unrecognized domain: <code>${result.dkim_domain}</code>.`);
     }
     if (result.suspicious_url) {
-      anomalies.push("Found suspicious URLs (either containing a raw IP address or having a length exceeding 75 characters).");
+      anomalies.push("Found suspicious URLs (either containing a raw IP address or having a length exceeding 150 characters).");
     }
     if (result.attachment_risk === "High Risk") {
       anomalies.push(`High-risk executable attachment detected: <code>${result.attachment}</code> (potentially executable).`);
@@ -504,14 +536,14 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
   let vtHtml = "";
   if (result.attachment && result.attachment !== "None") {
     const isDangerousFile = result.attachment_risk === "High Risk";
-    const vtColor = isDangerousFile ? "#f87171" : "#34d399";
+    const vtColor = isDangerousFile ? "#ef4444" : "#10b981";
     const vtVerdict = isDangerousFile 
       ? `<strong>43 / 72</strong> security engines flagged this signature as malicious!`
       : `<strong>0 / 72</strong> engines flagged this signature (Clean).`;
     
     vtHtml = `
-      <div style="margin-bottom:12px; border-top:1px dashed rgba(255,255,255,0.05); padding-top:8px;">
-        <strong style="color:#60a5fa; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">VirusTotal File Analysis:</strong>
+      <div style="margin-bottom:12px; border-top:1px dashed var(--pg-border); padding-top:8px;">
+        <strong style="color:var(--pg-text-muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">VirusTotal File Analysis:</strong>
         <p style="margin:4px 0 0 0; font-size:11px; color:${vtColor};">
           🔍 File: <code>${result.attachment}</code> &mdash; ${vtVerdict}
         </p>
@@ -528,20 +560,20 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
       const label = isPhishFeature ? "Phish Indicator" : "Safe Indicator";
       xaiRowsHtml += `
         <tr>
-          <td style="padding: 4px 0; color: #94a3b8; font-family: monospace;">${w.word}</td>
+          <td style="padding: 4px 0; color: var(--pg-text-muted); font-family: monospace;">${w.word}</td>
           <td style="padding: 4px 0; color: ${color}; font-weight: 600;">${label}</td>
-          <td style="padding: 4px 0; text-align: right; color: #f1f5f9; font-family: monospace;">${w.weight.toFixed(4)}</td>
+          <td style="padding: 4px 0; text-align: right; color: var(--pg-text); font-family: monospace;">${w.weight.toFixed(4)}</td>
         </tr>
       `;
     });
   } else {
-    xaiRowsHtml = "<tr><td colspan='3' style='color:#94a3b8; text-align:center;'>No words contributed to classifier boundaries.</td></tr>";
+    xaiRowsHtml = "<tr><td colspan='3' style='color:var(--pg-text-muted); text-align:center;'>No words contributed to classifier boundaries.</td></tr>";
   }
 
   // Whitelist/Blacklist button html
   const whitelistBtnHtml = isWhitelisted
-    ? `<button class="pg-whitelist-btn" style="background:#ef4444; border:none; border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer; font-weight:600;">Remove Whitelist</button>`
-    : (senderDomain ? `<button class="pg-whitelist-btn" style="background:#3b82f6; border:none; border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer; font-weight:600;">Whitelist Domain</button>` : '');
+    ? `<button class="pg-whitelist-btn" style="background:#ef4444; border:none; border-radius:6px; padding:4px 10px; color:white; font-size:10px; cursor:pointer; font-weight:600;">Remove Whitelist</button>`
+    : (senderDomain ? `<button class="pg-whitelist-btn" style="background:#3b82f6; border:none; border-radius:6px; padding:4px 10px; color:white; font-size:10px; cursor:pointer; font-weight:600;">Whitelist Domain</button>` : '');
 
   let headerColor = "#10b981";
   let headerTitle = `Safe (Low Risk)`;
@@ -553,28 +585,34 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
     headerColor = "#ef4444";
     headerTitle = `Dangerous (${(result.confidence * 100).toFixed(1)}% Confidence)`;
   } else if (isSuspicious) {
-    headerColor = "#fbbf24";
+    headerColor = "#f59e0b";
     headerTitle = `Suspicious (Caution - ${(result.confidence * 100).toFixed(1)}% Confidence)`;
   }
 
   const bannerHtml = `
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-      <h4 style="margin:0; font-size:14px; font-weight:bold; color:${headerColor}; display:flex; align-items:center; gap:6px;">
-        🛡️ PhishGuard Analysis: ${headerTitle}
-      </h4>
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom: 6px;">
       <div style="display:flex; align-items:center; gap:8px;">
-        <button class="pg-toggle-xai" style="background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer; font-weight:600;">
-          Toggle Highlights
+        <span style="font-size:15px; vertical-align:middle; line-height:1;">🛡️</span>
+        <h4 style="margin:0; font-size:13px; font-weight:700; color:${headerColor}; display:flex; align-items:center; gap:6px; line-height:1;">
+          PhishGuard: ${headerTitle}
+        </h4>
+        <span style="background:${headerColor}1a; color:${headerColor}; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:700; border:1px solid ${headerColor}33; line-height:1;">
+          Score: ${result.risk_score}%
+        </span>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button class="pg-toggle-xai" style="background:var(--pg-btn-bg); border:1px solid var(--pg-border); border-radius:6px; padding:4px 10px; color:var(--pg-btn-text); font-size:10px; cursor:pointer; font-weight:600; transition:all 0.15s ease;">
+          ✨ Highlights
         </button>
-        <button class="pg-toggle-details" style="background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer; font-weight:600;">
-          More Details
+        <button class="pg-toggle-details" style="background:var(--pg-btn-bg); border:1px solid var(--pg-border); border-radius:6px; padding:4px 10px; color:var(--pg-btn-text); font-size:10px; cursor:pointer; font-weight:600; transition:all 0.15s ease;">
+          🔍 Details
         </button>
         ${whitelistBtnHtml}
-        <button class="pg-close-banner" style="background:transparent; border:none; color:#cbd5e1; font-size:18px; line-height:1; cursor:pointer; font-weight:bold; padding:0 4px;" title="Dismiss Audit Alert">&times;</button>
+        <button class="pg-close-banner" style="background:transparent; border:none; color:var(--pg-text-muted); font-size:16px; line-height:1; cursor:pointer; font-weight:bold; padding:0 4px; margin-left:4px;" title="Dismiss Audit Alert">&times;</button>
       </div>
     </div>
-    <div style="font-size:12px; margin-bottom:10px; color:#94a3b8;">
-      Risk Score: <strong>${result.risk_score}%</strong> | Recommendation: <strong>${result.recommended_action}</strong>
+    <div style="font-size:11px; margin-bottom:8px; color:var(--pg-text-muted);">
+      Recommendation: <strong>${result.recommended_action}</strong>
     </div>
     <div class="pg-badge-grid">
       ${spoofBadge}
@@ -584,21 +622,21 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
     </div>
     
     <!-- Collapsible drawer for advanced details -->
-    <div class="pg-details-drawer" style="display:none; margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.1); font-size:12px; color:#cbd5e1; animation: fadeIn 0.2s ease-out;">
+    <div class="pg-details-drawer" style="display:none; margin-top:14px; padding-top:12px; border-top:1px solid var(--pg-border); font-size:12px; color:var(--pg-text); animation: fadeIn 0.2s ease-out;">
       <div style="margin-bottom:12px;">
-        <strong style="color:#60a5fa; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Anomaly Audit Log:</strong>
-        <ul style="margin:6px 0 0 16px; padding:0; list-style-type:disc; color:#94a3b8;">
+        <strong style="color:var(--pg-text-muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Anomaly Audit Log:</strong>
+        <ul style="margin:6px 0 0 16px; padding:0; list-style-type:disc; color:var(--pg-text-muted);">
           ${anomaliesHtml}
         </ul>
       </div>
       
       ${vtHtml}
-
+ 
       <div>
-        <strong style="color:#60a5fa; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Top Classifier Features (XAI):</strong>
+        <strong style="color:var(--pg-text-muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Top Classifier Features (XAI):</strong>
         <table style="width:100%; border-collapse:collapse; margin-top:6px;">
           <thead>
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); text-align:left; font-size:10px; color:#64748b; text-transform:uppercase;">
+            <tr style="border-bottom: 1px solid var(--pg-border); text-align:left; font-size:10px; color:var(--pg-text-muted); text-transform:uppercase;">
               <th style="padding-bottom:4px; font-weight:600;">Word</th>
               <th style="padding-bottom:4px; font-weight:600;">Influence</th>
               <th style="padding-bottom:4px; font-weight:600; text-align:right;">Weight</th>
@@ -621,7 +659,7 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
   if (result.suspicious_url || isDangerous || isSuspicious) {
     interceptSuspiciousLinks(bodyNode);
   }
-
+ 
   // Toggle banner details drawer via mini-badge click
   badge.removeEventListener("click", toggleBannerVisibility);
   badge.addEventListener("click", toggleBannerVisibility);
@@ -630,7 +668,7 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
     const isCurrentlyHidden = window.getComputedStyle(banner).display === "none";
     banner.style.display = isCurrentlyHidden ? "block" : "none";
   }
-
+ 
   // Wire up close button
   const closeBtn = banner.querySelector(".pg-close-banner");
   closeBtn.addEventListener("click", () => {
@@ -786,6 +824,26 @@ function escapeHtml(text) {
 
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Luminance-based site theme detector
+function isDarkTheme(element) {
+  let el = element;
+  while (el && el !== document.body) {
+    const bg = window.getComputedStyle(el).backgroundColor;
+    if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
+      const match = bg.match(/\d+/g);
+      if (match && match.length >= 3) {
+        const r = parseInt(match[0]);
+        const g = parseInt(match[1]);
+        const b = parseInt(match[2]);
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return luminance < 0.5;
+      }
+    }
+    el = el.parentElement;
+  }
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
 // Start content observer
