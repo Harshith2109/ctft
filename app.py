@@ -322,7 +322,10 @@ def parse_email_metadata(text):
         if re.search(r'https?://\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', url):
             suspicious_url = True
         if len(url) > 150:
-            suspicious_url = True
+            domain = get_domain_from_url(url)
+            is_google_url = domain and any(domain == g or domain.endswith('.' + g) for g in ['google.com', 'accounts.google.com'])
+            if not is_google_url:
+                suspicious_url = True
             
         # OpenPhish Check
         domain = get_domain_from_url(url)
@@ -621,10 +624,13 @@ def scan_link():
                 is_suspicious = True
                 reasons.append(f"Domain '{domain}' contains lookalike characters or brand-spoofing indicators.")
         
-        # 3. Excess length
+        # 3. Excess length (exempt official trusted Google recovery/account infrastructure)
         if len(url) > 150:
-            is_suspicious = True
-            reasons.append("URL is abnormally long (>150 characters), which is common in redirect scams.")
+            domain_parsed = get_domain_from_url(url)
+            is_google_url = domain_parsed and any(domain_parsed == g or domain_parsed.endswith('.' + g) for g in ['google.com', 'accounts.google.com'])
+            if not is_google_url:
+                is_suspicious = True
+                reasons.append("URL is abnormally long (>150 characters), which is common in redirect scams.")
             
         # 4. OpenPhish Check
         domain = get_domain_from_url(url)
