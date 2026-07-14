@@ -618,7 +618,7 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
   parentNode.insertBefore(banner, parentNode.firstChild);
   
   // Link Click Interception logic
-  if (result.suspicious_url || isPhish) {
+  if (result.suspicious_url || isDangerous || isSuspicious) {
     interceptSuspiciousLinks(bodyNode);
   }
 
