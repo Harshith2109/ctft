@@ -84,9 +84,9 @@ project/
 
 ---
 
-## 🔬 How It Works — The Four-Layer Pipeline
+## 🔬 How It Works — The Hybrid Decision Fusion Pipeline
 
-Every email submitted to the application is processed through four simultaneous layers:
+Every email submitted to the application is processed through four simultaneous layers and resolved through a centralized Hybrid Decision logic:
 
 ```
                         ┌──────────────────────────────┐
@@ -97,27 +97,34 @@ Every email submitted to the application is processed through four simultaneous 
           │                            │                            │
           ▼                            ▼                            ▼
   ┌───────────────┐          ┌──────────────────┐         ┌──────────────────┐
-  │ 1. ML Model   │          │ 2. Metadata      │         │ 3. Rule-Based    │
-  │               │          │    Analysis      │         │    Risk Score    │
-  │ TF-IDF →      │          │                  │         │                  │
-  │ Classifier    │          │ Sender domain    │         │ Suspicious term  │
-  │ (NB/LR/RF)    │          │ DKIM header      │         │ frequency count  │
-  │               │          │ Attachment ext   │         │ → 0-100 score    │
-  │ → label +     │          │ URL patterns     │         │ → risk level     │
-  │   confidence  │          │                  │         │ → action         │
+  │ 1. ML Model   │          │ 2. Metadata &    │         │ 3. Rule-Based    │
+  │   Classifier  │          │    Threat Intel  │         │    Risk Score    │
+  │               │          │                  │         │                  │
+  │ TF-IDF Vocab  │          │ SPF/DKIM aligned │         │ Suspicious terms │
+  │ vectorization │          │ Attachment ext   │         │ frequency counts │
+  │ NB / LR / RF  │          │ OpenPhish Feed   │         │ → 0-100 score    │
   └───────┬───────┘          └────────┬─────────┘         └──────────┬───────┘
           │                           │                              │
+          │ (baseline verdict)        │ (trust / threat overrides)   │ (rules data)
+          ▼                           │                              │
+  ┌───────────────┐                   │                              │
+  │ 4. XAI Engine │                   │                              │
+  │               │                   │                              │
+  │ Computes      │                   │                              │
+  │ per-word weight                   │                              │
+  └───────┬───────┘                   │                              │
+          │                           │                              │
+          │ (word weights)            │                              │
           └─────────────┐             │                              │
                         ▼             ▼                              │
-               ┌─────────────────────────────┐                      │
-               │  4. XAI — Explain Prediction│                      │
-               │                             │                      │
-               │  Per-word feature weights   │                      │
-               │  computed from pipeline     │                      │
-               │  internals (top 15 words)   │                      │
-               └─────────────┬───────────────┘                      │
-                             │                                       │
-                             ▼                                       ▼
+                ┌────────────────────────────────┐                   │
+                │ 5. Hybrid Decision Logic       │                   │
+                │                                │                   │
+                │ Applies trust / threat overrides                   │
+                │ to compute final threat level  │                   │
+                └───────────────┬────────────────┘                   │
+                                │                                    │
+                                ▼                                    ▼
                   ┌──────────────────────────────────────────────────────┐
                   │                JSON Response to Browser              │
                   │  prediction · confidence · model_used · sender ·     │
