@@ -1,4 +1,6 @@
-﻿venv/
+venv/
 __pycache__/
 predictions.db
 *.pyc
+phishing.csv
+download_and_train.py
