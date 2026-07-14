@@ -447,6 +447,10 @@ function requestPrediction(emailText) {
           }
         }
       );
+    });
+  });
+}
+
 // Renders glassmorphism status alerts at the top of the email
 function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
   const isWhitelisted = result.model_used === "local-whitelist";
