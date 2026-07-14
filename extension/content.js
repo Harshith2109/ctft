@@ -321,12 +321,26 @@ async function runGmailAudit(msgNode, badge) {
     const hasGmailScan = msgNode.innerText.includes("Scanned by Gmail") || 
                          msgNode.innerText.includes("Scanned by Google");
 
+    // Extract actual HTML link destinations to pass to the backend URL reputational check
+    let urlList = [];
+    if (bodyNode) {
+      bodyNode.querySelectorAll("a").forEach(a => {
+        if (a.href && a.href.startsWith("http")) {
+          urlList.push(a.href);
+        }
+      });
+    }
+    urlList = [...new Set(urlList)];
+    
     // Assemble text payload
     let textToAnalyze = `From: ${sender}\nSubject: ${subject}\nAttachment: ${attachment}\n`;
     if (hasGmailScan) {
       textToAnalyze += `Gmail-Scan: Scanned by Gmail\n`;
     }
     textToAnalyze += `\n${bodyText}`;
+    if (urlList.length > 0) {
+      textToAnalyze += "\n\nLinks:\n" + urlList.join("\n");
+    }
     
     const result = await processDomainChecks(senderDomain, textToAnalyze);
     renderAuditResult(bodyNode, msgNode, badge, result, senderDomain);
@@ -369,8 +383,22 @@ async function runOutlookAudit(paneNode, badge) {
       }
     }
     
+    // Extract actual HTML link destinations to pass to the backend URL reputational check
+    let urlList = [];
+    if (bodyNode) {
+      bodyNode.querySelectorAll("a").forEach(a => {
+        if (a.href && a.href.startsWith("http")) {
+          urlList.push(a.href);
+        }
+      });
+    }
+    urlList = [...new Set(urlList)];
+    
     // Assemble text payload
-    const textToAnalyze = `From: ${sender}\nSubject: ${subject}\nAttachment: ${attachment}\n\n${bodyText}`;
+    let textToAnalyze = `From: ${sender}\nSubject: ${subject}\nAttachment: ${attachment}\n\n${bodyText}`;
+    if (urlList.length > 0) {
+      textToAnalyze += "\n\nLinks:\n" + urlList.join("\n");
+    }
     
     const result = await processDomainChecks(senderDomain, textToAnalyze);
     renderAuditResult(bodyNode, paneNode, badge, result, senderDomain);
