@@ -49,6 +49,43 @@ def init_db():
 
 init_db()
 
+import urllib.request
+import time
+
+OPENPHISH_DOMAINS = set()
+last_openphish_update = 0
+
+def update_openphish_cache():
+    global OPENPHISH_DOMAINS, last_openphish_update
+    current_time = time.time()
+    # Update once every hour (3600 seconds)
+    if current_time - last_openphish_update < 3600 and OPENPHISH_DOMAINS:
+        return
+        
+    print("Updating OpenPhish domain feed...")
+    try:
+        req = urllib.request.Request(
+            "https://openphish.com/feed.txt",
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
+        with urllib.request.urlopen(req, timeout=5) as response:
+            content = response.read().decode('utf-8')
+            domains = [line.strip().lower() for line in content.splitlines() if line.strip()]
+            OPENPHISH_DOMAINS = set(domains)
+            last_openphish_update = current_time
+            print(f"OpenPhish domain feed updated successfully! Loaded {len(OPENPHISH_DOMAINS)} domains.")
+    except Exception as e:
+        print(f"Error fetching OpenPhish feed: {e}")
+
+def get_domain_from_url(url):
+    domain_match = re.search(r'https?://([^/]+)', url)
+    if domain_match:
+        host = domain_match.group(1).lower()
+        if host.startswith("www."):
+            host = host[4:]
+        return host
+    return ""
+
 # Store prediction in database
 def store_prediction(email_text, prediction, confidence, model_used, sender, risk_score, has_url, attachment_risk):
     try:
@@ -280,11 +317,20 @@ def parse_email_metadata(text):
     has_url = len(urls) > 0
     
     suspicious_url = False
+    openphish_flagged = False
     for url in urls:
         if re.search(r'https?://\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', url):
             suspicious_url = True
         if len(url) > 150:
             suspicious_url = True
+            
+        # OpenPhish Check
+        domain = get_domain_from_url(url)
+        if domain:
+            update_openphish_cache()
+            if domain in OPENPHISH_DOMAINS:
+                suspicious_url = True
+                openphish_flagged = True
             
     return {
         'sender': sender,
@@ -297,7 +343,8 @@ def parse_email_metadata(text):
         'attachment_risk': attachment_risk,
         'has_url': has_url,
         'url_count': len(urls),
-        'suspicious_url': suspicious_url
+        'suspicious_url': suspicious_url,
+        'openphish_flagged': openphish_flagged
     }
 
 # Explainable AI (XAI) feature importance computation
@@ -412,6 +459,10 @@ def compute_hybrid_verdict(ml_label, ml_confidence, metadata, rules_analysis):
         if metadata['suspicious_url']:
             combined_prob = max(combined_prob, 0.80)
             reasons.append("Link checker flagged malicious IP-based or abnormally long URLs.")
+            
+        if metadata.get('openphish_flagged'):
+            combined_prob = max(combined_prob, 0.95)
+            reasons.append("URL domain is actively listed in OpenPhish database of verified scams.")
 
     # Helpful heuristic verification logs
     if metadata['attachment'] != 'None' and metadata['attachment_risk'] == 'Low Risk':
@@ -575,10 +626,20 @@ def scan_link():
             is_suspicious = True
             reasons.append("URL is abnormally long (>150 characters), which is common in redirect scams.")
             
+        # 4. OpenPhish Check
+        domain = get_domain_from_url(url)
+        if domain:
+            update_openphish_cache()
+            if domain in OPENPHISH_DOMAINS:
+                is_suspicious = True
+                reasons.append(f"Domain '{domain}' is listed in the OpenPhish database of active phishing campaigns.")
+            
         # Heuristic scoring
         score = 0
         if is_suspicious:
             score = 65 + (20 if len(reasons) > 1 else 0)
+            if domain and domain in OPENPHISH_DOMAINS:
+                score = max(score, 95)
         else:
             score = 5
             
