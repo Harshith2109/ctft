@@ -639,7 +639,7 @@ urls = re.findall(url_pattern, text)
 | `has_url` | `len(urls) > 0` |
 | `url_count` | Total number of matched URLs |
 | `suspicious_url = True` | Any URL matches bare-IP pattern `http://X.X.X.X/...` |
-| `suspicious_url = True` | Any URL has `len(url) > 75` characters |
+| `suspicious_url = True` | Any URL has `len(url) > 150` characters (exempting trusted brand, institutional `.gov`/`.edu`, and cloud infrastructure domains) |
 
 ---
 
@@ -691,7 +691,7 @@ When a URL is submitted, the backend analyzes the string structure without trigg
 
 * **Numerical IP Check:** Detects if the URL hosts a bare IP address (e.g. `http://192.168.1.1/`) which bypasses DNS reputational reviews.
 * **Typosquatting & Brand Spoofing:** Checks if the domain contains lookalike brand substrings (such as `paypa1`, `nettflix`, `micr0soft`, `faceb00k`, `amzn`, or `login-`).
-* **Length Auditing:** Flags URLs exceeding **150 characters**, which are commonly associated with tracking redirects and hidden token payloads.
+* **Length Auditing:** Flags URLs exceeding **150 characters**, which are commonly associated with tracking redirects and hidden token payloads. To prevent false positives on legitimate services, domains mapped to verified brands, official institutional suffixes (`.gov`/`.edu`), or major cloud/developer platforms (like GitHub, AWS, Render, etc.) are automatically exempted from this length check.
 * **OpenPhish Verification:** Cross-references the link's domain against the local, 1-hour cached OpenPhish database of active threat URLs.
 * **Scoring & Verdict:**
   * **OpenPhish positive:** Instantly overrides the threat level to `High Risk` (risk score of 95%).

@@ -86,6 +86,31 @@ def get_domain_from_url(url):
         return host
     return ""
 
+# Checks if a URL domain belongs to trusted institutional, brand, or cloud infrastructure
+def is_trusted_for_long_url(url):
+    domain = get_domain_from_url(url)
+    if not domain:
+        return False
+    # 1. Check institutional suffixes
+    trusted_suffixes = ['.gov', '.gov.in', '.nic.in', '.edu', '.edu.in', '.ac.in']
+    if any(domain.endswith(suffix) for suffix in trusted_suffixes):
+        return True
+    # 2. Check major trusted brands/cloud providers that legitimately utilize extremely long links
+    trusted_domains = [
+        'paypal.com', 'paypal.co.uk',
+        'netflix.com',
+        'google.com', 'accounts.google.com', 'googlemail.com', 'gmail.com', 'youtube.com',
+        'microsoft.com', 'microsoftonline.com', 'live.com', 'outlook.com', 'office.com', 'office365.com', 'sharepoint.com',
+        'apple.com', 'icloud.com',
+        'amazon.com', 'amazon.in', 'aws.amazon.com', 'media-amazon.com',
+        'facebook.com', 'fb.com',
+        'github.com', 'githubusercontent.com',
+        'render.com', 'onrender.com'
+    ]
+    if any(domain == td or domain.endswith('.' + td) for td in trusted_domains):
+        return True
+    return False
+
 # Store prediction in database
 def store_prediction(email_text, prediction, confidence, model_used, sender, risk_score, has_url, attachment_risk):
     try:
@@ -322,9 +347,7 @@ def parse_email_metadata(text):
         if re.search(r'https?://\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', url):
             suspicious_url = True
         if len(url) > 150:
-            domain = get_domain_from_url(url)
-            is_google_url = domain and any(domain == g or domain.endswith('.' + g) for g in ['google.com', 'accounts.google.com'])
-            if not is_google_url:
+            if not is_trusted_for_long_url(url):
                 suspicious_url = True
             
         # OpenPhish Check
@@ -624,11 +647,9 @@ def scan_link():
                 is_suspicious = True
                 reasons.append(f"Domain '{domain}' contains lookalike characters or brand-spoofing indicators.")
         
-        # 3. Excess length (exempt official trusted Google recovery/account infrastructure)
+        # 3. Excess length (exempt trusted institutional, brand, and cloud domains)
         if len(url) > 150:
-            domain_parsed = get_domain_from_url(url)
-            is_google_url = domain_parsed and any(domain_parsed == g or domain_parsed.endswith('.' + g) for g in ['google.com', 'accounts.google.com'])
-            if not is_google_url:
+            if not is_trusted_for_long_url(url):
                 is_suspicious = True
                 reasons.append("URL is abnormally long (>150 characters), which is common in redirect scams.")
             
