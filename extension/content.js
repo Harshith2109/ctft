@@ -95,6 +95,8 @@ const STYLES = `
     backdrop-filter: blur(12px) !important;
     display: none; /* Hidden by default, toggled via mini-badge click */
     animation: pgFadeIn 0.2s ease-out !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .phishguard-alert-banner.dark-theme {
@@ -663,8 +665,9 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
   
   banner.innerHTML = bannerHtml;
   
-  // Prepend/insert banner to parent container
-  parentNode.insertBefore(banner, parentNode.firstChild);
+  // Prepend/insert banner to parent container (target block-level container div.gs if present in Gmail)
+  const gsNode = parentNode.querySelector("div.gs") || parentNode;
+  gsNode.insertBefore(banner, gsNode.firstChild);
   
   // Link Click Interception logic
   if (result.suspicious_url || isDangerous || isSuspicious) {
