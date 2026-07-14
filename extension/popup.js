@@ -301,13 +301,19 @@ document.addEventListener("DOMContentLoaded", () => {
     resultsBlock.classList.remove("hidden");
     resultsBlock.className = "card result-card"; // Reset styling
 
-    const isPhish = data.prediction === "Phishing";
+    const isDangerous = data.risk_level === "High Risk";
+    const isSuspicious = data.risk_level === "Medium Risk";
 
-    if (isPhish) {
+    if (isDangerous) {
       resultsBlock.classList.add("phish");
       resIcon.textContent = "🚨";
       resTitle.textContent = "Threat Alert: Phishing";
       resTitle.style.color = "#ef4444";
+    } else if (isSuspicious) {
+      resultsBlock.classList.add("suspicious");
+      resIcon.textContent = "⚠️";
+      resTitle.textContent = "Security Warning: Suspicious";
+      resTitle.style.color = "#f59e0b";
     } else {
       resultsBlock.classList.add("safe");
       resIcon.textContent = "🛡️";
@@ -326,13 +332,19 @@ document.addEventListener("DOMContentLoaded", () => {
     resultsBlock.classList.remove("hidden");
     resultsBlock.className = "card result-card"; // Reset styling
 
-    const isDanger = data.prediction === "Phishing" || data.prediction === "Suspicious" || data.risk_score >= 50;
+    const isDangerous = data.risk_level === "High Risk";
+    const isSuspicious = data.risk_level === "Medium Risk";
 
-    if (isDanger) {
+    if (isDangerous) {
       resultsBlock.classList.add("phish");
       resIcon.textContent = "🚨";
-      resTitle.textContent = data.is_zip ? "Threat Alert: Zipped Malware" : `Threat Alert: ${data.prediction}`;
+      resTitle.textContent = data.is_zip ? "Threat Alert: Zipped Malware" : `Threat Alert: Dangerous`;
       resTitle.style.color = "#ef4444";
+    } else if (isSuspicious) {
+      resultsBlock.classList.add("suspicious");
+      resIcon.textContent = "⚠️";
+      resTitle.textContent = `Security Warning: Suspicious`;
+      resTitle.style.color = "#f59e0b";
     } else {
       resultsBlock.classList.add("safe");
       resIcon.textContent = "🛡️";
@@ -342,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     resSub.textContent = data.filename ? `File: ${data.filename}` : `Link Reputation Checked`;
     resScore.textContent = `${data.risk_score}%`;
-    resAction.textContent = data.risk_level;
+    resAction.textContent = data.risk_level || "Low Risk";
 
     // Show reasons/heuristics
     resReasonsBlock.classList.remove("hidden");

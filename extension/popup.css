@@ -199,6 +199,11 @@ h1 {
   background: rgba(16, 185, 129, 0.08);
 }
 
+.result-card.suspicious {
+  border-left-color: var(--color-warning);
+  background: rgba(245, 158, 11, 0.08);
+}
+
 .result-card.phish {
   border-left-color: var(--color-danger);
   background: rgba(239, 68, 68, 0.08);

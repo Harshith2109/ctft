@@ -52,6 +52,14 @@ const STYLES = `
   .pg-mini-badge.phish:hover {
     box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3) !important;
   }
+  .pg-mini-badge.suspicious {
+    background: rgba(245, 158, 11, 0.2) !important;
+    color: #fbbf24 !important;
+    border: 1px solid rgba(245, 158, 11, 0.5) !important;
+  }
+  .pg-mini-badge.suspicious:hover {
+    box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3) !important;
+  }
   .pg-mini-badge.whitelisted {
     background: rgba(59, 130, 246, 0.2) !important;
     color: #60a5fa !important;
@@ -91,6 +99,9 @@ const STYLES = `
   }
   .phishguard-alert-banner.whitelisted {
     border-left: 6px solid #3b82f6 !important;
+  }
+  .phishguard-alert-banner.suspicious {
+    border-left: 6px solid #f59e0b !important;
   }
   
   .pg-badge-grid {
@@ -411,16 +422,20 @@ function requestPrediction(emailText) {
 
 // Renders glassmorphism status alerts at the top of the email
 function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
-  const isPhish = result.prediction === "Phishing";
   const isWhitelisted = result.model_used === "local-whitelist";
+  const isDangerous = result.risk_level === "High Risk";
+  const isSuspicious = result.risk_level === "Medium Risk";
   
   // Set badge class and text based on diagnosis
   if (isWhitelisted) {
     badge.className = "pg-mini-badge whitelisted";
     badge.innerHTML = "🛡️ Whitelisted";
-  } else if (isPhish) {
+  } else if (isDangerous) {
     badge.className = "pg-mini-badge phish";
-    badge.innerHTML = `🚨 Phishing (${(result.confidence * 100).toFixed(0)}%)`;
+    badge.innerHTML = `🚨 Dangerous (${(result.confidence * 100).toFixed(0)}%)`;
+  } else if (isSuspicious) {
+    badge.className = "pg-mini-badge suspicious";
+    badge.innerHTML = `⚠️ Suspicious (${(result.confidence * 100).toFixed(0)}%)`;
   } else {
     badge.className = "pg-mini-badge safe";
     badge.innerHTML = `🟢 Safe (${(result.confidence * 100).toFixed(0)}%)`;
@@ -431,7 +446,13 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
   if (existing) existing.remove();
   
   const banner = document.createElement("div");
-  banner.className = `phishguard-alert-banner ${isWhitelisted ? 'whitelisted' : (isPhish ? 'phish' : 'safe')}`;
+  
+  let bannerClass = "safe";
+  if (isWhitelisted) bannerClass = "whitelisted";
+  else if (isDangerous) bannerClass = "phish";
+  else if (isSuspicious) bannerClass = "suspicious";
+  
+  banner.className = `phishguard-alert-banner ${bannerClass}`;
   
   // Format badges
   const spoofBadge = result.domain_spoof 
@@ -522,10 +543,24 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
     ? `<button class="pg-whitelist-btn" style="background:#ef4444; border:none; border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer; font-weight:600;">Remove Whitelist</button>`
     : (senderDomain ? `<button class="pg-whitelist-btn" style="background:#3b82f6; border:none; border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer; font-weight:600;">Whitelist Domain</button>` : '');
 
+  let headerColor = "#10b981";
+  let headerTitle = `Safe (Low Risk)`;
+  
+  if (isWhitelisted) {
+    headerColor = "#3b82f6";
+    headerTitle = "Whitelisted (Domain Trusted)";
+  } else if (isDangerous) {
+    headerColor = "#ef4444";
+    headerTitle = `Dangerous (${(result.confidence * 100).toFixed(1)}% Confidence)`;
+  } else if (isSuspicious) {
+    headerColor = "#fbbf24";
+    headerTitle = `Suspicious (Caution - ${(result.confidence * 100).toFixed(1)}% Confidence)`;
+  }
+
   const bannerHtml = `
     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-      <h4 style="margin:0; font-size:14px; font-weight:bold; color:${isPhish ? '#ef4444' : '#10b981'}; display:flex; align-items:center; gap:6px;">
-        🛡️ PhishGuard Analysis: ${result.prediction} (${(result.confidence * 100).toFixed(1)}% Confidence)
+      <h4 style="margin:0; font-size:14px; font-weight:bold; color:${headerColor}; display:flex; align-items:center; gap:6px;">
+        🛡️ PhishGuard Analysis: ${headerTitle}
       </h4>
       <div style="display:flex; align-items:center; gap:8px;">
         <button class="pg-toggle-xai" style="background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:4px; padding:3px 8px; color:white; font-size:10px; cursor:pointer; font-weight:600;">
