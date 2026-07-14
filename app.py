@@ -283,7 +283,7 @@ def parse_email_metadata(text):
     for url in urls:
         if re.search(r'https?://\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', url):
             suspicious_url = True
-        if len(url) > 75:
+        if len(url) > 150:
             suspicious_url = True
             
     return {
