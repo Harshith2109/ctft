@@ -31,13 +31,17 @@ A machine-learning-powered web application that detects phishing emails in real 
 
 | Feature | Where | Description |
 |---|---|---|
+| **Gmail & Outlook Browser Extension** | Chrome / Firefox | Audits emails inside the Gmail/Outlook DOM; adds status mini-badges and warnings |
+| **OpenPhish Threat Intelligence** | Backend | Hourly-cached local matching against OpenPhish database of active phishing campaigns |
+| **Hybrid Decision Overrides** | Backend | Override ML text classifiers for verified roots (.gov/.edu) and critical threat spoofing |
+| **Theme-Adaptive Alert Banner** | Extension UI | Minimalist vertical stacked layout; dynamically adjusts dark/light mode to blend into Gmail |
 | **Multi-Model ML Classification** | Backend + UI | Switch between Naïve Bayes, Logistic Regression, or Random Forest per-analysis |
 | **XAI Word-Weight Heatmap** | UI | Top 15 words highlighted inline with red (phishing) / green (safe) shading scaled by weight magnitude |
 | **XAI Feature Weight Table** | UI | Tabular view of each word, its class influence, a proportional bar, and exact numeric weight |
 | **Sender Domain Spoof Detection** | Backend + UI | Flags lookalike brand domains; verifies official brand infrastructure |
 | **DKIM Simulation** | Backend + UI | Parses `Signed-by:` header; validates against official brand signing domains |
 | **Attachment Risk Grading** | Backend + UI | Classifies attachment extensions as High Risk / Low Risk / None |
-| **URL Threat Detection** | Backend + UI | Flags raw-IP URLs and abnormally long redirect chains |
+| **URL Threat Detection** | Backend + UI | Flags raw-IP URLs and abnormally long redirect chains (>150 characters) |
 | **Rule-Based Risk Score (0–100)** | Backend + UI | Keyword frequency scoring independent of the ML model |
 | **Recommended Action** | UI | Contextual advice: Delete / Mark as Spam / Verify Sender / No action |
 | **Model Performance Dashboard** | UI | Live accuracy bars and switchable confusion matrix for all three classifiers |
