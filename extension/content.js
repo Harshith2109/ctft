@@ -594,30 +594,37 @@ function renderAuditResult(bodyNode, parentNode, badge, result, senderDomain) {
   }
 
   const bannerHtml = `
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom: 6px;">
-      <div style="display:flex; align-items:center; gap:8px;">
+    <!-- Row 1: Title and Close Button -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
         <span style="font-size:15px; vertical-align:middle; line-height:1;">🛡️</span>
-        <h4 style="margin:0; font-size:13px; font-weight:700; color:${headerColor}; display:flex; align-items:center; gap:6px; line-height:1;">
+        <h4 style="margin:0; font-size:13px; font-weight:700; color:${headerColor}; display:inline-flex; align-items:center; gap:6px; line-height:1;">
           PhishGuard: ${headerTitle}
         </h4>
         <span style="background:${headerColor}1a; color:${headerColor}; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:700; border:1px solid ${headerColor}33; line-height:1;">
           Score: ${result.risk_score}%
         </span>
       </div>
-      <div style="display:flex; align-items:center; gap:6px;">
-        <button class="pg-toggle-xai" style="background:var(--pg-btn-bg); border:1px solid var(--pg-border); border-radius:6px; padding:4px 10px; color:var(--pg-btn-text); font-size:10px; cursor:pointer; font-weight:600; transition:all 0.15s ease;">
-          ✨ Highlights
-        </button>
-        <button class="pg-toggle-details" style="background:var(--pg-btn-bg); border:1px solid var(--pg-border); border-radius:6px; padding:4px 10px; color:var(--pg-btn-text); font-size:10px; cursor:pointer; font-weight:600; transition:all 0.15s ease;">
-          🔍 Details
-        </button>
-        ${whitelistBtnHtml}
-        <button class="pg-close-banner" style="background:transparent; border:none; color:var(--pg-text-muted); font-size:16px; line-height:1; cursor:pointer; font-weight:bold; padding:0 4px; margin-left:4px;" title="Dismiss Audit Alert">&times;</button>
-      </div>
+      <button class="pg-close-banner" style="background:transparent; border:none; color:var(--pg-text-muted); font-size:16px; line-height:1; cursor:pointer; font-weight:bold; padding:0 4px; margin-left:4px;" title="Dismiss Audit Alert">&times;</button>
     </div>
-    <div style="font-size:11px; margin-bottom:8px; color:var(--pg-text-muted);">
+    
+    <!-- Row 2: Recommendation Info -->
+    <div style="font-size:11px; margin-bottom:10px; color:var(--pg-text-muted);">
       Recommendation: <strong>${result.recommended_action}</strong>
     </div>
+
+    <!-- Row 3: Action Buttons (Stacked below the title on a dedicated line) -->
+    <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--pg-border);">
+      <button class="pg-toggle-xai" style="background:var(--pg-btn-bg); border:1px solid var(--pg-border); border-radius:6px; padding:4px 12px; color:var(--pg-btn-text); font-size:10px; cursor:pointer; font-weight:600; transition:all 0.15s ease;">
+        ✨ Highlights
+      </button>
+      <button class="pg-toggle-details" style="background:var(--pg-btn-bg); border:1px solid var(--pg-border); border-radius:6px; padding:4px 12px; color:var(--pg-btn-text); font-size:10px; cursor:pointer; font-weight:600; transition:all 0.15s ease;">
+        🔍 Details
+      </button>
+      ${whitelistBtnHtml}
+    </div>
+
+    <!-- Row 4: Indicators Badges -->
     <div class="pg-badge-grid">
       ${spoofBadge}
       ${dkimBadge}
