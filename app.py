@@ -571,9 +571,9 @@ def scan_link():
                 reasons.append(f"Domain '{domain}' contains lookalike characters or brand-spoofing indicators.")
         
         # 3. Excess length
-        if len(url) > 75:
+        if len(url) > 150:
             is_suspicious = True
-            reasons.append("URL is abnormally long (>75 characters), which is common in redirect scams.")
+            reasons.append("URL is abnormally long (>150 characters), which is common in redirect scams.")
             
         # Heuristic scoring
         score = 0
